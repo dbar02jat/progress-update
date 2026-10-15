@@ -412,6 +412,7 @@ button { cursor: pointer; }
           <span class="chip" id="chatSub">Linimasa update</span>
         </div>
         <button class="btn btn-ghost" type="button" id="settingsBtn" aria-label="Pengaturan proyek"><svg class="icon"><use href="#i-gear"/></svg><span class="hide-sm">Pengaturan</span></button>
+        <button class="btn btn-ghost btn-danger" type="button" id="clearAllBtn" aria-label="Hapus semua update" title="Hapus semua update" hidden><svg class="icon"><use href="#i-trash"/></svg><span class="hide-sm" id="clearAllLabel">Hapus semua</span></button>
         <button class="btn" type="button" id="lockBtn"><svg class="icon"><use href="#i-lock"/></svg>Tutup</button>
       </div>
       <div class="msgs" id="msgs" aria-live="polite"></div>
@@ -552,7 +553,7 @@ button { cursor: pointer; }
 
   /* ---------- creator code (only its holder can create projects; the server checks it) ---------- */
   let ADMIN = store.get("pu-admin") || "";
-  function applyAdmin() { $("newRoomBtn").hidden = !ADMIN; }
+  function applyAdmin() { $("newRoomBtn").hidden = !ADMIN; $("clearAllBtn").hidden = !ADMIN; }
   function forgetAdmin() { ADMIN = ""; try { localStorage.removeItem("pu-admin"); } catch {} applyAdmin(); renderProjects(); }
 
   /* ---------- state ---------- */
@@ -780,7 +781,7 @@ button { cursor: pointer; }
     $("chatTitle").textContent = o.name;
     $("chatSub").textContent = retentionLabel(o.retention);
     show("vChat");
-    S.editing = null;
+    S.editing = null; disarmClear();
     renderUpdates(true);
     startPoll();
     if (finePointer) setTimeout(() => $("msgInput").focus({ preventScroll: true }), 30);
@@ -1156,6 +1157,33 @@ button { cursor: pointer; }
     show("vSettings");
   });
   $("settingsBack").addEventListener("click", showTimeline);
+
+  // Creator-only. First click arms ("Yakin hapus semua?"), second click within 4 s deletes on the server.
+  let clearT;
+  function disarmClear() {
+    clearTimeout(clearT); $("clearAllBtn").classList.remove("armed");
+    $("clearAllLabel").textContent = "Hapus semua"; $("clearAllBtn").setAttribute("aria-label", "Hapus semua update");
+  }
+  $("clearAllBtn").addEventListener("click", async () => {
+    const btn = $("clearAllBtn"), id = S.current, o = S.open.get(id);
+    if (!o || !ADMIN) return;
+    if (!btn.classList.contains("armed")) {
+      btn.classList.add("armed"); $("clearAllLabel").textContent = "Yakin hapus semua?";
+      btn.setAttribute("aria-label", "Klik lagi untuk menghapus semua update secara permanen");
+      clearT = setTimeout(disarmClear, 4000); return;
+    }
+    disarmClear(); btn.disabled = true;
+    try {
+      const r = await rpc("pu_clear_updates", { p_admin: ADMIN, p_id: id, p_auth: o.auth });
+      if (!r.ok) {
+        if (r.error === "forbidden") { forgetAdmin(); return toast("Kode pembuat di perangkat ini tidak berlaku lagi."); }
+        return handleAuthLoss(id, r.error);
+      }
+      if (S.current === id) { S.updates.clear(); S.reactions.clear(); clearReply(); S.editing = null; renderUpdates(true); }
+      toast(r.deleted ? "Semua update dihapus (" + r.deleted + ")." : "Tidak ada update untuk dihapus.");
+    } catch { toast("Gagal menghapus. Periksa koneksi."); }
+    finally { btn.disabled = false; }
+  });
   $("copyLink").addEventListener("click", async () => {
     const v = $("shareLink").value;
     try { await navigator.clipboard.writeText(v); toast("Link disalin."); }
