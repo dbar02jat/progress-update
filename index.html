@@ -244,7 +244,7 @@ button { cursor: pointer; }
       <p>Catatan progres proyek tim.</p>
     </div>
     <div class="side-actions">
-      <button class="btn btn-primary btn-block" id="newRoomBtn" type="button"><svg class="icon"><use href="#i-plus"/></svg>Proyek baru</button>
+      <button class="btn btn-primary btn-block" id="newRoomBtn" type="button" hidden><svg class="icon"><use href="#i-plus"/></svg>Proyek baru</button>
     </div>
     <p class="eyebrow side-label">Proyek</p>
     <ul class="rooms" id="roomList" aria-label="Daftar proyek"></ul>
@@ -260,12 +260,32 @@ button { cursor: pointer; }
           <p class="eyebrow">Mulai</p>
           <h2 class="h2">Semua update proyek di satu tempat.</h2>
           <ul class="welcome-steps">
-            <li><b>1</b><span>Buat proyek dan tentukan kata sandi.</span></li>
-            <li><b>2</b><span>Anggota tim menulis update progres di linimasa proyek.</span></li>
-            <li><b>3</b><span>Bagikan link dan kata sandi hanya ke anggota tim proyek itu.</span></li>
+            <li><b>1</b><span>Buka link proyek yang dibagikan pengelola tim.</span></li>
+            <li><b>2</b><span>Masukkan kata sandi proyek.</span></li>
+            <li><b>3</b><span>Tulis update progres di linimasa proyek.</span></li>
           </ul>
-          <p class="lede">Pilih proyek di kiri, atau buat yang baru.</p>
+          <p class="lede">Pilih proyek di kiri untuk mulai.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- creator setup (reached via #kelola) -->
+    <section class="view" id="vAdmin" hidden>
+      <div class="center">
+        <form class="card" id="adminForm" autocomplete="off">
+          <p class="eyebrow">Pengelola</p>
+          <h2 class="h2">Kode pembuat</h2>
+          <p class="lede" id="adminLede">Masukkan kode pembuat untuk mengaktifkan tombol Proyek baru di perangkat ini.</p>
+          <div class="field">
+            <label for="adminCode">Kode</label>
+            <input id="adminCode" type="password" maxlength="200" autocomplete="off">
+            <span class="hint" id="adminHint">Kode disimpan hanya di browser ini.</span>
+          </div>
+          <div class="form-row">
+            <button class="btn" type="button" id="adminForget" hidden>Hapus dari perangkat ini</button>
+            <button class="btn btn-primary" type="submit" id="adminSave">Simpan</button>
+          </div>
+        </form>
       </div>
     </section>
 
@@ -477,6 +497,11 @@ button { cursor: pointer; }
   let DEVICE_HASH = "";
   const deviceReady = sha256hex(DEVICE).then((h) => (DEVICE_HASH = h));
 
+  /* ---------- creator code (only its holder can create projects; the server checks it) ---------- */
+  let ADMIN = store.get("pu-admin") || "";
+  function applyAdmin() { $("newRoomBtn").hidden = !ADMIN; }
+  function forgetAdmin() { ADMIN = ""; try { localStorage.removeItem("pu-admin"); } catch {} applyAdmin(); renderProjects(); }
+
   /* ---------- state ---------- */
   const S = {
     projects: [], loaded: false, current: null,
@@ -492,7 +517,7 @@ button { cursor: pointer; }
     clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 3400);
   }
   function show(view) {
-    for (const v of ["vWelcome", "vCreate", "vLock", "vChat", "vSettings"]) $(v).hidden = v !== view;
+    for (const v of ["vWelcome", "vAdmin", "vCreate", "vLock", "vChat", "vSettings"]) $(v).hidden = v !== view;
     $("app").classList.toggle("show-main", view !== "vWelcome");
   }
   const fmtTime = (s) => new Date(s).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
@@ -565,7 +590,7 @@ button { cursor: pointer; }
     }
     const e = $("sideEmpty");
     if (!S.loaded) { e.hidden = false; e.textContent = "Memuat proyek…"; }
-    else if (!S.projects.length) { e.hidden = false; e.textContent = "Belum ada proyek. Buat proyek pertama untuk mulai mencatat progres."; }
+    else if (!S.projects.length) { e.hidden = false; e.textContent = ADMIN ? "Belum ada proyek. Buat proyek pertama untuk mulai mencatat progres." : "Belum ada proyek."; }
     else e.hidden = true;
   }
 
@@ -603,8 +628,12 @@ button { cursor: pointer; }
       const nm = await seal(key, { name }, id + ":name");
       const retention = parseInt($("retention").value, 10);
       const r = await rpc("pu_create_project", {
-        p_id: id, p_salt: salt, p_iter: ITER, p_auth: auth, p_name_iv: nm.iv, p_name_ct: nm.ct, p_retention: retention,
+        p_admin: ADMIN, p_id: id, p_salt: salt, p_iter: ITER, p_auth: auth, p_name_iv: nm.iv, p_name_ct: nm.ct, p_retention: retention,
       });
+      if (!r.ok && r.error === "forbidden") {
+        forgetAdmin(); show("vWelcome");
+        toast("Kode pembuat di perangkat ini tidak berlaku lagi."); return;
+      }
       if (!r.ok) throw new Error(r.error);
       S.open.set(id, { key, auth, name, retention });
       $("createForm").reset();
@@ -615,6 +644,32 @@ button { cursor: pointer; }
       toast(String(err.message) === "full" ? "Batas jumlah proyek tercapai. Hapus proyek lama dulu." : "Gagal membuat proyek. Periksa koneksi lalu coba lagi.");
     } finally { btn.disabled = false; btn.lastElementChild.textContent = "Buat proyek"; }
   });
+
+  /* ---------- creator setup ---------- */
+  function showAdmin() {
+    $("adminForm").reset();
+    $("adminForget").hidden = !ADMIN;
+    $("adminLede").textContent = ADMIN
+      ? "Perangkat ini sudah bisa membuat proyek. Masukkan kode lain untuk menggantinya."
+      : "Masukkan kode pembuat untuk mengaktifkan tombol Proyek baru di perangkat ini.";
+    $("adminHint").textContent = "Kode disimpan hanya di browser ini."; $("adminHint").className = "hint";
+    show("vAdmin");
+  }
+  function leaveAdmin() { try { history.replaceState(null, "", location.pathname + location.search); } catch {} show("vWelcome"); }
+  $("adminForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const code = $("adminCode").value.trim(); if (!code) return;
+    $("adminSave").disabled = true;
+    try {
+      if (await rpc("pu_check_admin", { p_admin: code })) {
+        ADMIN = code; store.set("pu-admin", code); applyAdmin(); renderProjects();
+        leaveAdmin(); toast("Perangkat ini sekarang bisa membuat proyek.");
+      } else { $("adminHint").textContent = "Kode salah."; $("adminHint").className = "hint bad"; }
+    } catch { $("adminHint").textContent = "Tidak bisa terhubung. Coba lagi."; $("adminHint").className = "hint bad"; }
+    finally { $("adminSave").disabled = false; }
+  });
+  window.addEventListener("hashchange", () => { if (location.hash === "#kelola") showAdmin(); });
+  $("adminForget").addEventListener("click",() => { forgetAdmin(); leaveAdmin(); toast("Kode pembuat dihapus dari perangkat ini."); });
 
   /* ---------- unlock ---------- */
   function showLock(msg, bad) {
@@ -898,10 +953,12 @@ button { cursor: pointer; }
       $("sideEmpty").textContent = "Browser ini tidak didukung. Coba Chrome, Firefox, Safari, atau Edge terbaru.";
       $("newRoomBtn").disabled = true; setSync("Tidak didukung"); return;
     }
+    applyAdmin();
     renderProjects();
     await loadProjects();
     const want = location.hash.slice(1);
-    if (want && S.projects.some((p) => p.id === want)) selectProject(want);
+    if (want === "kelola") showAdmin();
+    else if (want && S.projects.some((p) => p.id === want)) selectProject(want);
     setInterval(() => { if (!document.hidden) loadProjects(); }, 30000);
   }
   boot();
