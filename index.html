@@ -184,13 +184,22 @@ button { cursor: pointer; }
 .time { font-family: var(--f-mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .bubble { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 2px; max-width: 68ch; }
 .bubble.sealed { font-size: 13px; color: var(--muted); font-style: italic; }
-.del {
-  margin-left: auto; border: 0; background: none; padding: 0; font-size: 12px; color: var(--muted);
-  text-decoration: underline; visibility: hidden;
+.edited { font-size: 11px; color: var(--muted); font-style: italic; }
+.actions { margin-left: auto; display: flex; gap: 12px; }
+.act {
+  border: 0; background: none; padding: 2px 0; font-size: 12px; color: var(--muted);
+  text-decoration: underline; text-underline-offset: 2px;
 }
-.msg:hover .del, .del:focus-visible, .del.armed { visibility: visible; }
-.del.armed { color: var(--danger); font-weight: 600; }
-@media (hover: none) { .del { visibility: visible; } }
+.act:hover { color: var(--accent); }
+.act.armed { color: var(--danger); font-weight: 600; }
+.edit-box { display: grid; gap: 8px; margin-top: 6px; max-width: 68ch; }
+.edit-box textarea {
+  width: 100%; resize: vertical; min-height: 64px; max-height: 240px; border: 1px solid var(--accent);
+  background: var(--bg); border-radius: 10px; padding: 8px 10px; line-height: 1.4;
+}
+.edit-box textarea:focus { outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.edit-box .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.edit-box .btn { padding: 6px 12px; font-size: 13px; }
 .empty-chat { margin: auto; text-align: center; color: var(--muted); max-width: 280px; display: grid; gap: 6px; }
 .empty-chat strong { color: var(--ink); font-family: var(--f-display); font-size: 18px; }
 
@@ -508,6 +517,7 @@ button { cursor: pointer; }
     open: new Map(),      // projectId -> { key, auth, name, retention }  (memory only)
     updates: new Map(),   // updateId -> { id, author, created_at, plain }
     lastAt: null, pollT: null, polling: false, myName: store.get("pu-name") || "",
+    editing: null,        // updateId currently open in the inline editor
   };
 
   /* ---------- helpers ---------- */
@@ -605,7 +615,7 @@ button { cursor: pointer; }
     try { history.replaceState(null, "", location.pathname + location.search); } catch {}
     renderProjects(); show("vWelcome");
   }
-  function forget(id) { S.open.delete(id); if (id === S.current) { S.updates.clear(); S.lastAt = null; stopPoll(); } }
+  function forget(id) { S.open.delete(id); if (id === S.current) { S.updates.clear(); S.lastAt = null; S.editing = null; stopPoll(); } }
 
   /* ---------- create ---------- */
   $("newRoomBtn").addEventListener("click", () => {
@@ -724,6 +734,7 @@ button { cursor: pointer; }
     $("chatTitle").textContent = o.name;
     $("chatSub").textContent = retentionLabel(o.retention);
     show("vChat");
+    S.editing = null;
     renderUpdates(true);
     startPoll();
     if (finePointer) setTimeout(() => $("msgInput").focus({ preventScroll: true }), 30);
@@ -760,19 +771,24 @@ button { cursor: pointer; }
     const keep = new Set(r.ids);
     for (const k of [...S.updates.keys()]) if (!keep.has(k)) { S.updates.delete(k); changed = true; }
     for (const u of r.updates) {
-      if (!S.updates.has(u.id)) {
+      const have = S.updates.get(u.id);
+      if (!have || have.edited_at !== (u.edited_at || null)) {
         let plain = null;
         try { plain = await unseal(o.key, u.iv, u.ct, id); } catch {}
-        S.updates.set(u.id, { id: u.id, author: u.author, created_at: u.created_at, plain });
+        S.updates.set(u.id, { id: u.id, author: u.author, created_at: u.created_at, edited_at: u.edited_at || null, plain });
         changed = true;
       }
-      if (!S.lastAt || u.created_at > S.lastAt) S.lastAt = u.created_at;
     }
+    if (r.now) S.lastAt = r.now;
     if (changed) renderUpdates();
   }
 
+  // While an update is being edited, incoming changes wait so the open editor isn't wiped.
+  let renderPending = false;
   function renderUpdates(forceBottom) {
     if ($("vChat").hidden) return;
+    if (S.editing) { renderPending = true; return; }
+    renderPending = false;
     const box = $("msgs");
     const nearBottom = forceBottom || box.scrollHeight - box.scrollTop - box.clientHeight < 120;
     box.textContent = "";
@@ -794,10 +810,24 @@ button { cursor: pointer; }
       who.textContent = mine ? "Kamu" : ((u.plain && u.plain.n) || "Anggota tim");
       const tm = document.createElement("span"); tm.className = "time"; tm.textContent = fmtTime(u.created_at);
       head.append(who, tm);
+      if (u.edited_at) {
+        const ed = document.createElement("span"); ed.className = "edited"; ed.textContent = "diedit";
+        ed.title = "Diedit " + fmtDay(u.edited_at).toLowerCase() + " " + fmtTime(u.edited_at);
+        head.append(ed);
+      }
       if (mine) {
-        const del = document.createElement("button"); del.type = "button"; del.className = "del"; del.textContent = "hapus";
+        const acts = document.createElement("span"); acts.className = "actions";
+        if (u.plain) {
+          const ed = document.createElement("button"); ed.type = "button"; ed.className = "act"; ed.textContent = "edit";
+          ed.setAttribute("aria-label", "Edit update ini");
+          ed.addEventListener("click", () => startEdit(u.id, wrap));
+          acts.append(ed);
+        }
+        const del = document.createElement("button"); del.type = "button"; del.className = "act"; del.textContent = "hapus";
+        del.setAttribute("aria-label", "Hapus update ini");
         del.addEventListener("click", () => armButton(del, "yakin hapus?", () => deleteUpdate(u.id)));
-        head.append(del);
+        acts.append(del);
+        head.append(acts);
       }
       const b = document.createElement("div"); b.className = "bubble";
       if (!u.plain) { b.classList.add("sealed"); b.textContent = "Update ini tidak bisa dibuka dengan kata sandi sekarang."; }
@@ -805,6 +835,52 @@ button { cursor: pointer; }
       wrap.append(head, b); box.append(wrap);
     }
     if (nearBottom) box.scrollTop = box.scrollHeight;
+  }
+
+  function startEdit(uid, wrap) {
+    const u = S.updates.get(uid); if (!u || !u.plain || S.editing) return;
+    S.editing = uid;
+    const bubble = wrap.querySelector(".bubble"), acts = wrap.querySelector(".actions");
+    bubble.hidden = true; if (acts) acts.hidden = true;
+    const ed = document.createElement("form"); ed.className = "edit-box";
+    const ta = document.createElement("textarea"); ta.maxLength = 2000; ta.value = u.plain.t;
+    ta.id = "edit-" + uid; ta.setAttribute("aria-label", "Edit update");
+    const row = document.createElement("div"); row.className = "row";
+    const save = document.createElement("button"); save.type = "submit"; save.className = "btn btn-primary"; save.textContent = "Simpan";
+    const cancel = document.createElement("button"); cancel.type = "button"; cancel.className = "btn"; cancel.textContent = "Batal";
+    const hint = document.createElement("span"); hint.className = "hint";
+    hint.textContent = finePointer ? "Enter untuk simpan, Esc untuk batal" : "";
+    row.append(save, cancel, hint); ed.append(ta, row); wrap.append(ed);
+    ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+    const finish = () => { S.editing = null; renderUpdates(); };
+    cancel.addEventListener("click", finish);
+    ta.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { e.preventDefault(); finish(); }
+      else if (e.key === "Enter" && !e.shiftKey && !e.isComposing && finePointer) { e.preventDefault(); ed.requestSubmit(); }
+    });
+    ed.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const text = ta.value.trim();
+      if (!text) { hint.textContent = "Update tidak boleh kosong. Pakai hapus untuk menghapusnya."; hint.className = "hint bad"; return; }
+      if (text === u.plain.t) return finish();
+      const id = S.current, o = S.open.get(id); if (!o) return finish();
+      save.disabled = true; cancel.disabled = true; hint.className = "hint"; hint.textContent = "Menyimpan…";
+      try {
+        const sealed = await seal(o.key, { t: text, n: S.myName }, id);
+        const r = await rpc("pu_edit_update", { p_id: id, p_auth: o.auth, p_update: uid, p_device: DEVICE, p_iv: sealed.iv, p_ct: sealed.ct });
+        if (!r.ok) {
+          if (["bad", "changed", "missing", "locked"].includes(r.error)) { S.editing = null; handleAuthLoss(id, r.error); return; }
+          hint.textContent = r.error === "not_yours" ? "Update ini sudah dihapus atau bukan milikmu." : "Gagal menyimpan.";
+          hint.className = "hint bad"; save.disabled = false; cancel.disabled = false; return;
+        }
+        const cur = S.updates.get(uid);
+        if (cur) { cur.plain = { t: text, n: S.myName }; cur.edited_at = r.edited_at; }
+        finish();
+      } catch {
+        hint.textContent = "Gagal menyimpan. Periksa koneksi."; hint.className = "hint bad";
+        save.disabled = false; cancel.disabled = false;
+      }
+    });
   }
 
   async function deleteUpdate(uid) {
@@ -841,7 +917,7 @@ button { cursor: pointer; }
       }
       const u = r.update;
       if (S.current === id) {
-        S.updates.set(u.id, { id: u.id, author: u.author, created_at: u.created_at, plain: { t: text, n: S.myName } });
+        S.updates.set(u.id, { id: u.id, author: u.author, created_at: u.created_at, edited_at: null, plain: { t: text, n: S.myName } });
         renderUpdates(true);
       }
     } catch { input.value = text; autoGrow(); toast("Update gagal diposting. Periksa koneksi."); }
@@ -928,7 +1004,7 @@ button { cursor: pointer; }
   /* ---------- locking ---------- */
   function lockAll() {
     if (!S.open.size) return;
-    stopPoll(); S.open.clear(); S.updates.clear(); S.lastAt = null;
+    stopPoll(); S.open.clear(); S.updates.clear(); S.lastAt = null; S.editing = null;
     input.value = ""; autoGrow();
     renderProjects();
     if (S.current) showLock("Proyek ditutup otomatis karena tidak ada aktivitas.");
