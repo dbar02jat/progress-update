@@ -185,13 +185,15 @@ button { cursor: pointer; }
 .bubble { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 2px; max-width: 68ch; }
 .bubble.sealed { font-size: 13px; color: var(--muted); font-style: italic; }
 .edited { font-size: 11px; color: var(--muted); font-style: italic; }
-.actions { margin-left: auto; display: flex; gap: 12px; }
+.actions { margin-left: auto; display: flex; gap: 2px; align-self: center; }
 .act {
-  border: 0; background: none; padding: 2px 0; font-size: 12px; color: var(--muted);
-  text-decoration: underline; text-underline-offset: 2px;
+  height: 28px; min-width: 28px; padding: 0 6px; border: 0; border-radius: 8px; background: none; color: var(--muted);
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 600;
 }
-.act:hover { color: var(--accent); }
-.act.armed { color: var(--danger); font-weight: 600; }
+.act .icon { width: 16px; height: 16px; }
+.act:hover { background: var(--theirs); color: var(--accent); }
+.act.act-del:hover { color: var(--danger); }
+.act.armed, .act.armed:hover { background: var(--danger); color: var(--panel); }
 .edit-box { display: grid; gap: 8px; margin-top: 6px; max-width: 68ch; }
 .edit-box textarea {
   width: 100%; resize: vertical; min-height: 64px; max-height: 240px; border: 1px solid var(--accent);
@@ -242,7 +244,9 @@ button { cursor: pointer; }
   <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></symbol>
-  <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-folder"viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
 </svg>
 
@@ -818,14 +822,12 @@ button { cursor: pointer; }
       if (mine) {
         const acts = document.createElement("span"); acts.className = "actions";
         if (u.plain) {
-          const ed = document.createElement("button"); ed.type = "button"; ed.className = "act"; ed.textContent = "edit";
-          ed.setAttribute("aria-label", "Edit update ini");
+          const ed = iconButton("i-edit", "Edit update");
           ed.addEventListener("click", () => startEdit(u.id, wrap));
           acts.append(ed);
         }
-        const del = document.createElement("button"); del.type = "button"; del.className = "act"; del.textContent = "hapus";
-        del.setAttribute("aria-label", "Hapus update ini");
-        del.addEventListener("click", () => armButton(del, "yakin hapus?", () => deleteUpdate(u.id)));
+        const del = iconButton("i-trash", "Hapus update"); del.classList.add("act-del");
+        del.addEventListener("click", () => armIcon(del, () => deleteUpdate(u.id)));
         acts.append(del);
         head.append(acts);
       }
@@ -835,6 +837,20 @@ button { cursor: pointer; }
       wrap.append(head, b); box.append(wrap);
     }
     if (nearBottom) box.scrollTop = box.scrollHeight;
+  }
+
+  function iconButton(icon, label) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "act";
+    b.setAttribute("aria-label", label); b.title = label;
+    b.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#' + icon + '"/></svg>';
+    return b;
+  }
+  // First click arms (turns red, asks "Hapus?"), second click within 3.5 s confirms.
+  function armIcon(btn, onConfirm) {
+    if (btn.classList.contains("armed")) { clearTimeout(btn._t); onConfirm(); return; }
+    const label = document.createElement("span"); label.textContent = "Hapus?";
+    btn.append(label); btn.classList.add("armed"); btn.setAttribute("aria-label", "Klik lagi untuk menghapus");
+    btn._t = setTimeout(() => { btn.classList.remove("armed"); label.remove(); btn.setAttribute("aria-label", "Hapus update"); }, 3500);
   }
 
   function startEdit(uid, wrap) {
