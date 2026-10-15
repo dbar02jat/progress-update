@@ -412,7 +412,7 @@ button { cursor: pointer; }
           <span class="chip" id="chatSub">Linimasa update</span>
         </div>
         <button class="btn btn-ghost" type="button" id="settingsBtn" aria-label="Pengaturan proyek"><svg class="icon"><use href="#i-gear"/></svg><span class="hide-sm">Pengaturan</span></button>
-        <button class="btn btn-ghost btn-danger" type="button" id="clearAllBtn" aria-label="Hapus semua update" title="Hapus semua update" hidden><svg class="icon"><use href="#i-trash"/></svg><span class="hide-sm" id="clearAllLabel">Hapus semua</span></button>
+        <button class="btn btn-ghost btn-danger" type="button" id="clearAllBtn" aria-label="Hapus semua update" title="Hapus semua update"><svg class="icon"><use href="#i-trash"/></svg><span class="hide-sm" id="clearAllLabel">Hapus semua</span></button>
         <button class="btn" type="button" id="lockBtn"><svg class="icon"><use href="#i-lock"/></svg>Tutup</button>
       </div>
       <div class="msgs" id="msgs" aria-live="polite"></div>
@@ -553,7 +553,7 @@ button { cursor: pointer; }
 
   /* ---------- creator code (only its holder can create projects; the server checks it) ---------- */
   let ADMIN = store.get("pu-admin") || "";
-  function applyAdmin() { $("newRoomBtn").hidden = !ADMIN; $("clearAllBtn").hidden = !ADMIN; }
+  function applyAdmin() { $("newRoomBtn").hidden = !ADMIN; }
   function forgetAdmin() { ADMIN = ""; try { localStorage.removeItem("pu-admin"); } catch {} applyAdmin(); renderProjects(); }
 
   /* ---------- state ---------- */
@@ -1158,7 +1158,7 @@ button { cursor: pointer; }
   });
   $("settingsBack").addEventListener("click", showTimeline);
 
-  // Creator-only. First click arms ("Yakin hapus semua?"), second click within 4 s deletes on the server.
+  // Anyone in the project. First click arms ("Yakin hapus semua?"), second click within 4 s deletes on the server.
   let clearT;
   function disarmClear() {
     clearTimeout(clearT); $("clearAllBtn").classList.remove("armed");
@@ -1166,7 +1166,7 @@ button { cursor: pointer; }
   }
   $("clearAllBtn").addEventListener("click", async () => {
     const btn = $("clearAllBtn"), id = S.current, o = S.open.get(id);
-    if (!o || !ADMIN) return;
+    if (!o) return;
     if (!btn.classList.contains("armed")) {
       btn.classList.add("armed"); $("clearAllLabel").textContent = "Yakin hapus semua?";
       btn.setAttribute("aria-label", "Klik lagi untuk menghapus semua update secara permanen");
@@ -1174,11 +1174,8 @@ button { cursor: pointer; }
     }
     disarmClear(); btn.disabled = true;
     try {
-      const r = await rpc("pu_clear_updates", { p_admin: ADMIN, p_id: id, p_auth: o.auth });
-      if (!r.ok) {
-        if (r.error === "forbidden") { forgetAdmin(); return toast("Kode pembuat di perangkat ini tidak berlaku lagi."); }
-        return handleAuthLoss(id, r.error);
-      }
+      const r = await rpc("pu_clear_updates", { p_id: id, p_auth: o.auth });
+      if (!r.ok) return handleAuthLoss(id, r.error);
       if (S.current === id) { S.updates.clear(); S.reactions.clear(); clearReply(); S.editing = null; renderUpdates(true); }
       toast(r.deleted ? "Semua update dihapus (" + r.deleted + ")." : "Tidak ada update untuk dihapus.");
     } catch { toast("Gagal menghapus. Periksa koneksi."); }
