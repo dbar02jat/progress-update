@@ -194,6 +194,22 @@ button { cursor: pointer; }
 .act:hover { background: var(--theirs); color: var(--accent); }
 .act.act-del:hover { color: var(--danger); }
 .act.armed, .act.armed:hover { background: var(--danger); color: var(--panel); }
+.reacts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.react-chip {
+  border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 1px 9px 1px 7px;
+  font-size: 13px; line-height: 22px; display: inline-flex; gap: 5px; align-items: center; font-variant-numeric: tabular-nums;
+}
+.react-chip:hover { border-color: var(--accent); }
+.react-chip.mine { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.react-chip .em { font-size: 15px; }
+.emoji-btn { height: 42px; width: 42px; padding: 0; font-size: 20px; border-radius: 12px; flex: none; }
+.emoji-pop {
+  position: fixed; z-index: 30; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 6px; display: grid; gap: 2px; max-height: 260px; overflow-y: auto;
+  box-shadow: 0 16px 40px -16px rgba(0,0,0,.4);
+}
+.emo { width: 36px; height: 36px; border: 0; background: none; border-radius: 8px; font-size: 20px; line-height: 1; padding: 0; }
+.emo:hover, .emo:focus-visible { background: var(--theirs); }
 .edit-box { display: grid; gap: 8px; margin-top: 6px; max-width: 68ch; }
 .edit-box textarea {
   width: 100%; resize: vertical; min-height: 64px; max-height: 240px; border: 1px solid var(--accent);
@@ -244,7 +260,8 @@ button { cursor: pointer; }
   <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></symbol>
-  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-react" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/><path d="M19 2v6M16 5h6"/></symbol>
+  <symbol id="i-edit"viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></symbol>
   <symbol id="i-folder"viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
@@ -383,6 +400,7 @@ button { cursor: pointer; }
       </div>
       <div class="msgs" id="msgs" aria-live="polite"></div>
       <form class="composer" id="composer" autocomplete="off">
+        <button class="btn btn-ghost emoji-btn" type="button" id="emojiBtn" aria-label="Sisipkan emoji" title="Sisipkan emoji">😊</button>
         <textarea id="msgInput" rows="1" maxlength="2000" placeholder="Tulis update progres…" aria-label="Update progres"></textarea>
         <button class="btn btn-primary send" type="submit" id="sendBtn">Posting</button>
       </form>
@@ -448,6 +466,8 @@ button { cursor: pointer; }
     <div class="toast" id="toast" hidden></div>
   </main>
 </div>
+
+<div class="emoji-pop" id="emojiPop" role="dialog" aria-label="Pilih emoji" hidden></div>
 
 <script>
 (() => {
@@ -522,6 +542,7 @@ button { cursor: pointer; }
     updates: new Map(),   // updateId -> { id, author, created_at, plain }
     lastAt: null, pollT: null, polling: false, myName: store.get("pu-name") || "",
     editing: null,        // updateId currently open in the inline editor
+    reactions: new Map(), // reactionId -> { id, update_id, author, updated_at, plain: {e: [...], n} | null }
   };
 
   /* ---------- helpers ---------- */
@@ -609,17 +630,17 @@ button { cursor: pointer; }
   }
 
   function selectProject(id) {
-    if (S.current !== id) { stopPoll(); S.current = id; S.updates.clear(); S.lastAt = null; }
+    if (S.current !== id) { stopPoll(); S.current = id; S.updates.clear(); S.reactions.clear(); S.lastAt = null; }
     try { history.replaceState(null, "", "#" + id); } catch {}
     renderProjects();
     if (S.open.has(id)) showTimeline(); else showLock();
   }
   function closeProject() {
-    stopPoll(); S.current = null; S.updates.clear(); S.lastAt = null;
+    stopPoll(); S.current = null; S.updates.clear(); S.reactions.clear(); S.lastAt = null;
     try { history.replaceState(null, "", location.pathname + location.search); } catch {}
     renderProjects(); show("vWelcome");
   }
-  function forget(id) { S.open.delete(id); if (id === S.current) { S.updates.clear(); S.lastAt = null; S.editing = null; stopPoll(); } }
+  function forget(id) { S.open.delete(id); if (id === S.current) { S.updates.clear(); S.reactions.clear(); S.lastAt = null; S.editing = null; stopPoll(); } }
 
   /* ---------- create ---------- */
   $("newRoomBtn").addEventListener("click", () => {
@@ -783,6 +804,17 @@ button { cursor: pointer; }
         changed = true;
       }
     }
+    const rkeep = new Set(r.reaction_ids || []);
+    for (const k of [...S.reactions.keys()]) if (!rkeep.has(k)) { S.reactions.delete(k); changed = true; }
+    for (const x of r.reactions || []) {
+      const have = S.reactions.get(x.id);
+      if (!have || have.updated_at !== x.updated_at) {
+        let plain = null;
+        try { plain = await unseal(o.key, x.iv, x.ct, id + ":r:" + x.update_id); } catch {}
+        S.reactions.set(x.id, { id: x.id, update_id: x.update_id, author: x.author, updated_at: x.updated_at, plain });
+        changed = true;
+      }
+    }
     if (r.now) S.lastAt = r.now;
     if (changed) renderUpdates();
   }
@@ -803,6 +835,20 @@ button { cursor: pointer; }
       const p = document.createElement("span"); p.textContent = "Tulis update progres pertama untuk proyek ini di kolom bawah.";
       e.append(s, p); box.append(e); return;
     }
+    // Aggregate reactions per update: emoji -> { count, mine, names }
+    const byUpdate = new Map();
+    for (const x of S.reactions.values()) {
+      if (!x.plain || !Array.isArray(x.plain.e)) continue;
+      let agg = byUpdate.get(x.update_id); if (!agg) byUpdate.set(x.update_id, (agg = new Map()));
+      const mine = x.author === DEVICE_HASH;
+      for (const em of x.plain.e) {
+        if (typeof em !== "string" || em.length > 16) continue;
+        const a = agg.get(em) || { count: 0, mine: false, names: [] };
+        a.count++; if (mine) a.mine = true;
+        a.names.push(mine ? "Kamu" : (x.plain.n || "Anggota tim"));
+        agg.set(em, a);
+      }
+    }
     let lastDay = "";
     for (const u of list) {
       const day = fmtDay(u.created_at);
@@ -819,24 +865,75 @@ button { cursor: pointer; }
         ed.title = "Diedit " + fmtDay(u.edited_at).toLowerCase() + " " + fmtTime(u.edited_at);
         head.append(ed);
       }
+      const acts = document.createElement("span"); acts.className = "actions";
+      if (u.plain) {
+        const rb = iconButton("i-react", "Beri reaksi");
+        rb.addEventListener("click", () => openPicker(rb, QUICK, (em) => toggleReaction(u.id, em)));
+        acts.append(rb);
+      }
+      if (mine && u.plain) {
+        const ed = iconButton("i-edit", "Edit update");
+        ed.addEventListener("click", () => startEdit(u.id, wrap));
+        acts.append(ed);
+      }
       if (mine) {
-        const acts = document.createElement("span"); acts.className = "actions";
-        if (u.plain) {
-          const ed = iconButton("i-edit", "Edit update");
-          ed.addEventListener("click", () => startEdit(u.id, wrap));
-          acts.append(ed);
-        }
         const del = iconButton("i-trash", "Hapus update"); del.classList.add("act-del");
         del.addEventListener("click", () => armIcon(del, () => deleteUpdate(u.id)));
         acts.append(del);
-        head.append(acts);
       }
+      if (acts.childElementCount) head.append(acts);
       const b = document.createElement("div"); b.className = "bubble";
       if (!u.plain) { b.classList.add("sealed"); b.textContent = "Update ini tidak bisa dibuka dengan kata sandi sekarang."; }
       else b.textContent = u.plain.t;
-      wrap.append(head, b); box.append(wrap);
+      wrap.append(head, b);
+      const agg = byUpdate.get(u.id);
+      if (agg && agg.size) {
+        const rs = document.createElement("div"); rs.className = "reacts";
+        for (const [em, a] of agg) {
+          const c = document.createElement("button"); c.type = "button"; c.className = "react-chip" + (a.mine ? " mine" : "");
+          const e1 = document.createElement("span"); e1.className = "em"; e1.textContent = em;
+          const n1 = document.createElement("span"); n1.textContent = a.count;
+          c.append(e1, n1);
+          c.title = a.names.join(", ");
+          c.setAttribute("aria-label", em + " " + a.count + ": " + a.names.join(", ") + (a.mine ? ". Klik untuk batal." : ". Klik untuk ikut."));
+          c.setAttribute("aria-pressed", a.mine ? "true" : "false");
+          c.addEventListener("click", () => toggleReaction(u.id, em));
+          rs.append(c);
+        }
+        wrap.append(rs);
+      }
+      box.append(wrap);
     }
     if (nearBottom) box.scrollTop = box.scrollHeight;
+  }
+
+  // This device keeps one encrypted emoji set per update; toggling rewrites (or clears) it.
+  let reacting = false;
+  async function toggleReaction(uid, emoji) {
+    const id = S.current, o = S.open.get(id); if (!o || reacting) return;
+    reacting = true;
+    try {
+      await deviceReady;
+      const mineRow = [...S.reactions.values()].find((x) => x.update_id === uid && x.author === DEVICE_HASH);
+      const set = new Set(mineRow && mineRow.plain ? mineRow.plain.e : []);
+      if (set.has(emoji)) set.delete(emoji); else set.add(emoji);
+      const e = [...set].slice(0, 12);
+      let iv = null, ct = null;
+      if (e.length) { const b = await seal(o.key, { e, n: S.myName }, id + ":r:" + uid); iv = b.iv; ct = b.ct; }
+      const r = await rpc("pu_react", { p_id: id, p_auth: o.auth, p_update: uid, p_device: DEVICE, p_iv: iv, p_ct: ct });
+      if (!r.ok) {
+        if (["bad", "changed", "missing", "locked"].includes(r.error)) return handleAuthLoss(id, r.error);
+        return toast(r.error === "gone" ? "Update ini sudah dihapus." : "Reaksi gagal disimpan.");
+      }
+      if (S.current !== id) return;
+      if (mineRow) S.reactions.delete(mineRow.id);
+      if (r.reaction) {
+        const x = r.reaction;
+        S.reactions.set(x.id, { id: x.id, update_id: x.update_id, author: x.author, updated_at: x.updated_at, plain: { e, n: S.myName } });
+      }
+      renderUpdates();
+    } catch { toast("Reaksi gagal disimpan. Periksa koneksi."); }
+    finally { reacting = false; }
   }
 
   function iconButton(icon, label) {
@@ -909,7 +1006,47 @@ button { cursor: pointer; }
     } catch { toast("Update gagal dihapus. Periksa koneksi."); }
   }
 
+  /* ---------- emoji picker (shared by the composer and reactions) ---------- */
+  const EMOJI = "😀 😁 😂 🤣 😊 😍 😘 😎 🤔 😅 😉 🙂 😐 😴 😢 😭 😡 😱 🥳 🤗 🙏 👍 👎 👏 🙌 💪 👌 ✌️ 🤝 👀 ❤️ 💔 🔥 ✨ 🎉 ✅ ❌ ⚠️ ❓ 💡 📌 📅 ⏰ 🚀 💯 ☕ 🍕 🏠".split(" ");
+  const QUICK = ["👍", "❤️", "😂", "🎉", "😮", "😢", "🙏", "🔥"];
+  let pickerCleanup = null;
+  function closePicker() {
+    $("emojiPop").hidden = true;
+    if (pickerCleanup) { pickerCleanup(); pickerCleanup = null; }
+  }
+  function openPicker(anchor, list, onPick, keepOpen) {
+    closePicker();
+    const pop = $("emojiPop"); pop.textContent = "";
+    pop.style.gridTemplateColumns = "repeat(" + Math.min(8, list.length) + ", 36px)";
+    for (const em of list) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "emo"; b.textContent = em;
+      b.setAttribute("aria-label", em);
+      b.addEventListener("click", () => { onPick(em); if (!keepOpen) closePicker(); });
+      pop.append(b);
+    }
+    pop.hidden = false;
+    const ar = anchor.getBoundingClientRect(), pr = pop.getBoundingClientRect();
+    let top = ar.top - pr.height - 6; if (top < 8) top = ar.bottom + 6;
+    const left = Math.min(Math.max(8, ar.left + ar.width / 2 - pr.width / 2), window.innerWidth - pr.width - 8);
+    pop.style.top = top + "px"; pop.style.left = left + "px";
+    const onDown = (e) => { if (!pop.contains(e.target) && !anchor.contains(e.target)) closePicker(); };
+    const onKey = (e) => { if (e.key === "Escape") { closePicker(); anchor.focus(); } };
+    document.addEventListener("pointerdown", onDown, true); document.addEventListener("keydown", onKey);
+    pickerCleanup = () => { document.removeEventListener("pointerdown", onDown, true); document.removeEventListener("keydown", onKey); };
+  }
+  $("msgs").addEventListener("scroll", closePicker, { passive: true });
+  window.addEventListener("resize", closePicker);
+
   const input = $("msgInput");
+  $("emojiBtn").addEventListener("click", (e) => {
+    if (!$("emojiPop").hidden) return closePicker();
+    openPicker(e.currentTarget, EMOJI, (em) => {
+      const s = input.selectionStart ?? input.value.length, en = input.selectionEnd ?? s;
+      if (input.value.length + em.length > 2000) return;
+      input.setRangeText(em, s, en, "end"); autoGrow();
+      if (finePointer) input.focus();
+    }, true);
+  });
   function autoGrow() { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 160) + "px"; }
   input.addEventListener("input", autoGrow);
   input.addEventListener("keydown", (e) => {
@@ -988,13 +1125,19 @@ button { cursor: pointer; }
           const box = await seal(next.key, plain, id);
           rekeyed.push({ id: u.id, iv: box.iv, ct: box.ct });
         }
+        const rekeyedReactions = [];
+        for (const x of all.reactions || []) {
+          const aad = id + ":r:" + x.update_id;
+          const box = await seal(next.key, await unseal(o.key, x.iv, x.ct, aad), aad);
+          rekeyedReactions.push({ id: x.id, iv: box.iv, ct: box.ct });
+        }
         const r = await rpc("pu_change_password", {
           p_id: id, p_auth: o.auth, p_salt: salt, p_iter: ITER, p_new_auth: next.auth,
-          p_name_iv: nm.iv, p_name_ct: nm.ct, p_updates: rekeyed,
+          p_name_iv: nm.iv, p_name_ct: nm.ct, p_updates: rekeyed, p_reactions: rekeyedReactions,
         });
         if (r.ok) {
           o.key = next.key; o.auth = next.auth;
-          S.updates.clear(); S.lastAt = null;
+          S.updates.clear(); S.reactions.clear(); S.lastAt = null;
           st.textContent = ""; $("changeForm").reset(); updChangeHints();
           toast("Kata sandi diganti. Kirim kata sandi baru ke tim.");
           showTimeline();
@@ -1020,7 +1163,7 @@ button { cursor: pointer; }
   /* ---------- locking ---------- */
   function lockAll() {
     if (!S.open.size) return;
-    stopPoll(); S.open.clear(); S.updates.clear(); S.lastAt = null; S.editing = null;
+    stopPoll(); S.open.clear(); S.updates.clear(); S.reactions.clear(); S.lastAt = null; S.editing = null;
     input.value = ""; autoGrow();
     renderProjects();
     if (S.current) showLock("Proyek ditutup otomatis karena tidak ada aktivitas.");
