@@ -345,7 +345,7 @@ button { cursor: pointer; }
           <div class="field">
             <label for="roomName">Nama proyek</label>
             <input id="roomName" maxlength="60" placeholder="mis. Renovasi kantor Q4" required>
-            <span class="hint">Hanya terlihat setelah kata sandi dimasukkan.</span>
+            <span class="hint">Terlihat di daftar proyek. Isi update hanya terbuka dengan kata sandi.</span>
           </div>
           <div class="field">
             <label for="pass1">Kata sandi</label>
@@ -387,7 +387,7 @@ button { cursor: pointer; }
       <div class="lock-wrap">
         <form class="lock-card" id="unlockForm" autocomplete="off">
           <div class="lock-badge"><svg class="icon"><use href="#i-lock"/></svg></div>
-          <h2 class="lock-title">Proyek terkunci</h2>
+          <h2 class="lock-title" id="lockTitle">Proyek</h2>
           <span class="chip" id="lockSub"></span>
           <div class="field">
             <label for="unlockPass">Kata sandi</label>
@@ -638,9 +638,10 @@ button { cursor: pointer; }
       if (o) g.textContent = (o.name.trim().charAt(0) || "?").toUpperCase();
       else g.innerHTML = '<svg class="icon"><use href="#i-lock"/></svg>';
       const t = document.createElement("span"); t.style.minWidth = "0";
-      const n = document.createElement("div"); n.className = "room-name" + (o ? "" : " locked");
-      n.textContent = o ? o.name : "Proyek terkunci";
-      const s = document.createElement("div"); s.className = "room-sub"; s.textContent = "Dibuat " + fmtDate(p.created_at);
+      const n = document.createElement("div"); n.className = "room-name";
+      n.textContent = o ? o.name : (p.name || "Proyek tanpa nama");
+      const s = document.createElement("div"); s.className = "room-sub";
+      s.textContent = (o ? "Terbuka" : "Terkunci") + " · Dibuat " + fmtDate(p.created_at);
       t.append(n, s); b.append(g, t);
       b.addEventListener("click", () => selectProject(p.id));
       li.append(b); ul.append(li);
@@ -686,6 +687,7 @@ button { cursor: pointer; }
       const retention = parseInt($("retention").value, 10);
       const r = await rpc("pu_create_project", {
         p_admin: ADMIN, p_id: id, p_salt: salt, p_iter: ITER, p_auth: auth, p_name_iv: nm.iv, p_name_ct: nm.ct, p_retention: retention,
+        p_name: name,
       });
       if (!r.ok && r.error === "forbidden") {
         forgetAdmin(); show("vWelcome");
@@ -731,7 +733,8 @@ button { cursor: pointer; }
   /* ---------- unlock ---------- */
   function showLock(msg, bad) {
     const p = S.projects.find((x) => x.id === S.current);
-    $("lockSub").textContent = p ? "Dibuat " + fmtDate(p.created_at) : "";
+    $("lockTitle").textContent = (p && p.name) || "Proyek tanpa nama";
+    $("lockSub").textContent = p ? "Terkunci · Dibuat " + fmtDate(p.created_at) : "Terkunci";
     $("unlockForm").reset(); $("unlockName").value = S.myName;
     setLockMsg(msg || "", bad);
     show("vLock");
@@ -768,6 +771,9 @@ button { cursor: pointer; }
       }
       const { name } = await unseal(key, r.name_iv, r.name_ct, id + ":name");
       S.open.set(id, { key, auth, name, retention: r.retention_days });
+      // Older projects only have the encrypted name; fill in the visible one now that it's known.
+      const p = S.projects.find((x) => x.id === id);
+      if (p && !p.name) { p.name = name; rpc("pu_set_name", { p_id: id, p_auth: auth, p_name: name }).catch(() => {}); }
       renderProjects(); showTimeline();
     } catch {
       setLockMsg("Tidak bisa terhubung. Periksa koneksi lalu coba lagi.", true);
