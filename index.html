@@ -1360,16 +1360,19 @@ button { cursor: pointer; }
   $("lockBtn").addEventListener("click", () => { const id = S.current; watchOnLock(id); forget(id); renderProjects(); showLock(); });
   for (const b of document.querySelectorAll("[data-back]")) b.addEventListener("click", () => $("app").classList.remove("show-main"));
 
-  let hiddenAt = 0, idleT;
+  // Auto-lock after 5 minutes without a click or key press, whether or not sound is on.
+  // With sound on, locked projects keep chiming through the watcher above.
+  const IDLE_MS = 300000;
+  let lastActive = Date.now(), idleT;
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) { hiddenAt = Date.now(); if (!SOUND) stopPoll(); return; }
+    if (document.hidden) { if (!SOUND) stopPoll(); return; }
     unread = 0; document.title = BASE_TITLE;
-    // With sound on the project stays open in the background; the longer idle timer still closes it.
-    if (!SOUND && hiddenAt && Date.now() - hiddenAt > 120000) lockAll();
+    // Background tabs throttle timers, so also check the clock when the tab comes back.
+    if (Date.now() - lastActive > IDLE_MS) lockAll();
     loadProjects();
     if (S.current && S.open.has(S.current) && !$("vChat").hidden) startPoll();
   });
-  function bumpIdle() { clearTimeout(idleT); idleT = setTimeout(lockAll, SOUND ? 3600000 : 600000); }
+  function bumpIdle() { lastActive = Date.now(); clearTimeout(idleT); idleT = setTimeout(lockAll, IDLE_MS); }
   for (const ev of ["pointerdown", "keydown"]) document.addEventListener(ev, bumpIdle, { passive: true });
   bumpIdle();
 
