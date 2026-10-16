@@ -84,6 +84,7 @@ button { cursor: pointer; }
 .room-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .room-name.locked { color: var(--muted); font-weight: 500; }
 .room-sub { font-size: 12px; color: var(--muted); }
+.room-sub.new { color: var(--accent); font-weight: 600; }
 .side-empty { padding: 8px 18px; color: var(--muted); font-size: 13px; }
 .side-foot {
   border-top: 1px solid var(--line); padding: 10px 16px; font-family: var(--f-mono);
@@ -590,7 +591,7 @@ button { cursor: pointer; }
   $("soundBtn").addEventListener("click", () => {
     SOUND = !SOUND; store.set("pu-sound", SOUND ? "1" : "0"); applySound();
     if (SOUND) { ensureAudio(); setTimeout(chime, 50); toast("Suara notifikasi aktif di perangkat ini."); }
-    else toast("Suara notifikasi dimatikan.");
+    else { stopWatch(); toast("Suara notifikasi dimatikan."); }
     bumpIdle();
   });
   // Browsers only allow sound after the person has interacted with the page.
@@ -599,6 +600,36 @@ button { cursor: pointer; }
     if (SOUND) chime();
     if (document.hidden) { unread += n; document.title = "(" + unread + ") " + BASE_TITLE; }
   }
+
+  // Locked projects keep chiming while sound is on: the read key is dropped, but the access
+  // token stays in this tab's memory so the page can ask "anything new?" (time only, no content).
+  const WATCH = new Map();   // projectId -> { auth, baseline }
+  let watchT = null;
+  function watchOnLock(id) {
+    const o = S.open.get(id);
+    if (!SOUND || !o) return;
+    WATCH.set(id, { auth: o.auth, baseline: id === S.current && S.lastAt ? S.lastAt : null });
+    scheduleWatch(true);
+  }
+  function scheduleWatch(soon) {
+    clearTimeout(watchT);
+    if (WATCH.size && SOUND) watchT = setTimeout(runWatch, soon ? 1000 : 15000);
+  }
+  async function runWatch() {
+    for (const [id, w] of [...WATCH]) {
+      if (S.open.has(id)) { WATCH.delete(id); continue; }
+      try {
+        const r = await rpc("pu_activity", { p_id: id, p_auth: w.auth, p_device: DEVICE });
+        if (!r.ok) { if (r.error !== "locked") { WATCH.delete(id); S.watchNew.delete(id); renderProjects(); } continue; }
+        if (w.baseline === null) w.baseline = r.latest || "";
+        else if (r.latest && r.latest > w.baseline) {
+          w.baseline = r.latest; S.watchNew.add(id); notifyNew(1); renderProjects();
+        }
+      } catch {}
+    }
+    scheduleWatch(false);
+  }
+  function stopWatch() { WATCH.clear(); S.watchNew.clear(); clearTimeout(watchT); renderProjects(); }
 
   /* ---------- creator code (only its holder can create projects; the server checks it) ---------- */
   let ADMIN = store.get("pu-admin") || "";
@@ -613,6 +644,7 @@ button { cursor: pointer; }
     lastAt: null, pollT: null, polling: false, myName: store.get("pu-name") || "",
     editing: null,        // updateId currently open in the inline editor
     replyTo: null,        // updateId the composer is replying to
+    watchNew: new Set(),  // locked projects with new updates since they were locked
     reactions: new Map(), // reactionId -> { id, update_id, author, updated_at, plain: {e: [...], n} | null }
   };
 
@@ -690,7 +722,8 @@ button { cursor: pointer; }
       const n = document.createElement("div"); n.className = "room-name";
       n.textContent = o ? o.name : (p.name || "Proyek tanpa nama");
       const s = document.createElement("div"); s.className = "room-sub";
-      s.textContent = (o ? "Terbuka" : "Terkunci") + " · Dibuat " + fmtDate(p.created_at);
+      if (!o && S.watchNew.has(p.id)) { s.classList.add("new"); s.textContent = "Terkunci · ada update baru"; }
+      else s.textContent = (o ? "Terbuka" : "Terkunci") + " · Dibuat " + fmtDate(p.created_at);
       t.append(n, s); b.append(g, t);
       b.addEventListener("click", () => selectProject(p.id));
       li.append(b); ul.append(li);
@@ -820,6 +853,7 @@ button { cursor: pointer; }
       }
       const { name } = await unseal(key, r.name_iv, r.name_ct, id + ":name");
       S.open.set(id, { key, auth, name, retention: r.retention_days });
+      WATCH.delete(id); S.watchNew.delete(id);
       // Older projects only have the encrypted name; fill in the visible one now that it's known.
       const p = S.projects.find((x) => x.id === id);
       if (p && !p.name) { p.name = name; rpc("pu_set_name", { p_id: id, p_auth: auth, p_name: name }).catch(() => {}); }
@@ -1317,12 +1351,13 @@ button { cursor: pointer; }
   /* ---------- locking ---------- */
   function lockAll() {
     if (!S.open.size) return;
+    for (const id of S.open.keys()) watchOnLock(id);
     stopPoll(); S.open.clear(); S.updates.clear(); S.reactions.clear(); clearReply(); S.lastAt = null; S.editing = null;
     input.value = ""; autoGrow();
     renderProjects();
     if (S.current) showLock("Proyek ditutup otomatis karena tidak ada aktivitas.");
   }
-  $("lockBtn").addEventListener("click", () => { const id = S.current; forget(id); renderProjects(); showLock(); });
+  $("lockBtn").addEventListener("click", () => { const id = S.current; watchOnLock(id); forget(id); renderProjects(); showLock(); });
   for (const b of document.querySelectorAll("[data-back]")) b.addEventListener("click", () => $("app").classList.remove("show-main"));
 
   let hiddenAt = 0, idleT;
