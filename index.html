@@ -167,6 +167,21 @@ button { cursor: pointer; }
 }
 .chip { font-family: var(--f-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
 .back { display: none; }
+.call-bar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--accent-soft);
+}
+.call-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex: none; }
+.call-bar.ringing .call-dot, .call-bar.live .call-dot { animation: callpulse 1s ease-in-out infinite alternate; }
+@keyframes callpulse { from { opacity: 1; transform: scale(1); } to { opacity: .35; transform: scale(.7); } }
+.call-info { flex: 1; min-width: 160px; display: grid; }
+.call-info strong { font-size: 14px; font-variant-numeric: tabular-nums; }
+.call-info span { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.call-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.call-actions .btn { padding: 6px 12px; font-size: 13px; }
+.btn-hang { background: var(--danger); color: var(--panel); border-color: var(--danger); }
+.btn.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .call-bar .call-dot { animation: none !important; } }
 .bell { padding: 8px 10px; color: var(--muted); }
 .bell[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); }
 
@@ -277,7 +292,8 @@ button { cursor: pointer; }
   <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></symbol>
-  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-bell"viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
   <symbol id="i-bell-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.7 3A6 6 0 0 1 18 8c0 2.8.5 4.8 1.1 6.2"/><path d="M17 17H3s3-2 3-9c0-.8.1-1.5.4-2.2"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/><path d="M2 2l20 20"/></symbol>
   <symbol id="i-reply"viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></symbol>
@@ -416,10 +432,21 @@ button { cursor: pointer; }
           <h2 id="chatTitle">Proyek</h2>
           <span class="chip" id="chatSub">Linimasa update</span>
         </div>
+        <button class="btn btn-ghost" type="button" id="callBtn" aria-label="Telepon" title="Telepon" hidden><svg class="icon"><use href="#i-phone"/></svg><span class="hide-sm">Telepon</span></button>
         <button class="btn btn-ghost bell" type="button" id="soundBtn" aria-pressed="false" aria-label="Suara notifikasi mati" title="Suara notifikasi mati"><svg class="icon"><use id="soundIcon" href="#i-bell-off"/></svg></button>
         <button class="btn btn-ghost" type="button" id="settingsBtn" aria-label="Pengaturan proyek"><svg class="icon"><use href="#i-gear"/></svg><span class="hide-sm">Pengaturan</span></button>
         <button class="btn btn-ghost btn-danger" type="button" id="clearAllBtn" aria-label="Hapus semua update" title="Hapus semua update"><svg class="icon"><use href="#i-trash"/></svg><span class="hide-sm" id="clearAllLabel">Hapus semua</span></button>
         <button class="btn" type="button" id="lockBtn"><svg class="icon"><use href="#i-lock"/></svg>Tutup</button>
+      </div>
+      <div class="call-bar" id="callBar" role="status" hidden>
+        <span class="call-dot" aria-hidden="true"></span>
+        <div class="call-info"><strong id="callTitle"></strong><span id="callSub"></span></div>
+        <div class="call-actions">
+          <button class="btn btn-primary" type="button" id="callJoin">Gabung</button>
+          <button class="btn" type="button" id="callDecline">Tolak</button>
+          <button class="btn" type="button" id="callMute">Bisukan</button>
+          <button class="btn btn-hang" type="button" id="callHang">Tutup telepon</button>
+        </div>
       </div>
       <div class="msgs" id="msgs" aria-live="polite"></div>
       <div class="reply-bar" id="replyBar" hidden>
@@ -567,20 +594,22 @@ button { cursor: pointer; }
       if (audioCtx.state === "suspended") audioCtx.resume();
     } catch {}
   }
-  // Two soft rising notes, generated on the fly (no audio file to load).
-  function chime() {
+  // Tones are generated on the fly (no audio files to load).
+  function playNotes(notes, len) {
     if (!audioCtx || audioCtx.state !== "running") return;
     const t = audioCtx.currentTime;
-    for (const [freq, at] of [[880, 0], [1318.5, 0.15]]) {
+    for (const [freq, at] of notes) {
       const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
       osc.type = "sine"; osc.frequency.value = freq;
       gain.gain.setValueAtTime(0.0001, t + at);
       gain.gain.exponentialRampToValueAtTime(0.3, t + at + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + at + 0.4);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + at + len);
       osc.connect(gain).connect(audioCtx.destination);
-      osc.start(t + at); osc.stop(t + at + 0.45);
+      osc.start(t + at); osc.stop(t + at + len + 0.05);
     }
   }
+  const chime = () => playNotes([[880, 0], [1318.5, 0.15]], 0.4);
+  const ringTone = () => playNotes([[660, 0], [880, 0.2], [660, 0.4], [880, 0.6]], 0.17);
   function applySound() {
     const b = $("soundBtn");
     b.setAttribute("aria-pressed", SOUND ? "true" : "false");
@@ -595,7 +624,7 @@ button { cursor: pointer; }
     bumpIdle();
   });
   // Browsers only allow sound after the person has interacted with the page.
-  for (const ev of ["pointerdown", "keydown"]) document.addEventListener(ev, () => { if (SOUND) ensureAudio(); }, { passive: true });
+  for (const ev of ["pointerdown", "keydown"]) document.addEventListener(ev, ensureAudio, { passive: true });
   function notifyNew(n) {
     if (SOUND) chime();
     if (document.hidden) { unread += n; document.title = "(" + unread + ") " + BASE_TITLE; }
@@ -735,17 +764,17 @@ button { cursor: pointer; }
   }
 
   function selectProject(id) {
-    if (S.current !== id) { stopPoll(); S.current = id; S.updates.clear(); S.reactions.clear(); clearReply(); S.lastAt = null; }
+    if (S.current !== id) { callDetach(); stopPoll(); S.current = id; S.updates.clear(); S.reactions.clear(); clearReply(); S.lastAt = null; }
     try { history.replaceState(null, "", "#" + id); } catch {}
     renderProjects();
     if (S.open.has(id)) showTimeline(); else showLock();
   }
   function closeProject() {
-    stopPoll(); S.current = null; S.updates.clear(); S.reactions.clear(); clearReply(); S.lastAt = null;
+    callDetach(); stopPoll(); S.current = null; S.updates.clear(); S.reactions.clear(); clearReply(); S.lastAt = null;
     try { history.replaceState(null, "", location.pathname + location.search); } catch {}
     renderProjects(); show("vWelcome");
   }
-  function forget(id) { S.open.delete(id); if (id === S.current) { S.updates.clear(); S.reactions.clear(); clearReply(); S.lastAt = null; S.editing = null; stopPoll(); } }
+  function forget(id) { if (C.pid === id) callDetach(); S.open.delete(id); if (id === S.current) { S.updates.clear(); S.reactions.clear(); clearReply(); S.lastAt = null; S.editing = null; stopPoll(); } }
 
   /* ---------- create ---------- */
   $("newRoomBtn").addEventListener("click", () => {
@@ -871,6 +900,7 @@ button { cursor: pointer; }
     $("chatSub").textContent = retentionLabel(o.retention);
     show("vChat");
     S.editing = null; disarmClear();
+    callAttach(S.current, o);
     renderUpdates(true);
     startPoll();
     if (finePointer) setTimeout(() => $("msgInput").focus({ preventScroll: true }), 30);
@@ -1241,6 +1271,246 @@ button { cursor: pointer; }
     finally { $("sendBtn").disabled = false; }
   });
 
+  /* ---------- voice calls ----------
+     Audio flows peer-to-peer over WebRTC (encrypted by WebRTC itself). Call setup messages go
+     through a Supabase Realtime broadcast channel whose name is derived from the project's access
+     token, and every message is sealed with the project key, so outsiders can neither find nor
+     read them. Up to 4 people; the peer with the smaller session id always makes the offer. */
+  const ICE = [{ urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] }];
+  const MAX_CALL = 4;
+  const RT_URL = SB_URL.replace(/^https:/, "wss:") + "/realtime/v1/websocket?apikey=" + encodeURIComponent(SB_KEY) + "&vsn=1.0.0";
+  const C = {
+    pid: null, key: null, rt: null, online: false, me: hex(crypto.getRandomValues(new Uint8Array(8))),
+    inCall: false, stream: null, muted: false, startedAt: 0,
+    peers: new Map(),    // sessionId -> { pc, name, audio, state }
+    remote: new Map(),   // sessionId -> { name, last } for everyone currently in the call
+    hbT: null, tickT: null, ringing: false, ringT: null, ringStop: 0, declined: false,
+  };
+
+  // Minimal Phoenix-channel client for Realtime broadcast (join, heartbeat, send, reconnect).
+  function rtConnect(topic, onBroadcast, onStatus) {
+    const full = "realtime:" + topic;
+    let ws = null, ref = 0, hb = null, closed = false, joined = false, retry = 0;
+    function open() {
+      ws = new WebSocket(RT_URL); ref = 0;
+      ws.onopen = () => {
+        retry = 0;
+        ws.send(JSON.stringify({ topic: full, event: "phx_join", ref: String(++ref), join_ref: "1",
+          payload: { config: { broadcast: { self: false, ack: false }, presence: { key: "" }, postgres_changes: [], private: false } } }));
+        hb = setInterval(() => { try { ws.send(JSON.stringify({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(++ref) })); } catch {} }, 25000);
+      };
+      ws.onmessage = (e) => {
+        let d; try { d = JSON.parse(e.data); } catch { return; }
+        if (d.topic !== full) return;
+        if (d.event === "phx_reply" && d.ref === "1") { joined = d.payload && d.payload.status === "ok"; onStatus(joined); }
+        else if (d.event === "broadcast" && d.payload) onBroadcast(d.payload.event, d.payload.payload);
+      };
+      ws.onclose = () => {
+        clearInterval(hb); joined = false; onStatus(false);
+        if (!closed) setTimeout(open, Math.min(30000, 1000 * 2 ** retry++));
+      };
+    }
+    open();
+    return {
+      send(event, payload) {
+        if (!joined || !ws || ws.readyState !== 1) return false;
+        ws.send(JSON.stringify({ topic: full, event: "broadcast", ref: String(++ref), join_ref: "1", payload: { type: "broadcast", event, payload } }));
+        return true;
+      },
+      close() { closed = true; clearInterval(hb); try { ws.close(); } catch {} },
+    };
+  }
+
+  async function callAttach(id, o) {
+    if (C.pid === id && C.rt) return;
+    callDetach();
+    if (!("RTCPeerConnection" in window) || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+    C.pid = id; C.key = o.key;
+    const topic = "pu-" + (await sha256hex(o.auth + "63616c6c")).slice(0, 40);   // sha256(token || "call")
+    if (C.pid !== id) return;
+    C.rt = rtConnect(topic, (ev, payload) => { if (ev === "s") onSignal(id, payload); }, (ok) => { C.online = ok; renderCallBar(); });
+    C.tickT = setInterval(renderCallBar, 1000);
+    renderCallBar();
+  }
+  function callDetach() {
+    const rt = C.rt;
+    if (C.inCall) { hangUp(); if (rt) setTimeout(() => rt.close(), 1500); }   // let "leave" go out first
+    else if (rt) rt.close();
+    C.rt = null; C.pid = null; C.key = null; C.online = false; C.remote.clear(); C.declined = false;
+    stopRing(); clearInterval(C.tickT); renderCallBar();
+  }
+  async function sig(msg) {
+    const rt = C.rt, key = C.key, pid = C.pid;
+    if (!rt || !key) return;
+    rt.send("s", await seal(key, { ...msg, from: C.me }, pid + ":call"));
+  }
+  async function onSignal(pid, box) {
+    if (pid !== C.pid || !box || !box.iv) return;
+    let m; try { m = await unseal(C.key, box.iv, box.ct, pid + ":call"); } catch { return; }
+    if (!m || typeof m.from !== "string" || m.from === C.me || (m.to && m.to !== C.me)) return;
+    const name = typeof m.name === "string" && m.name.trim() ? m.name.trim().slice(0, 40) : "Anggota tim";
+    switch (m.type) {
+      case "hb":
+      case "join": {
+        const quiet = C.remote.size === 0;
+        C.remote.set(m.from, { name, last: Date.now() });
+        if (!C.inCall && quiet && !C.declined) startRing();
+        if (m.type === "join" && C.inCall) {
+          if (C.me < m.from) connectPeer(m.from, name); else sig({ type: "here", to: m.from, name: S.myName });
+        }
+        break;
+      }
+      case "here":
+        if (C.inCall && !C.peers.has(m.from)) connectPeer(m.from, name);
+        break;
+      case "offer":
+        if (C.inCall && typeof m.sdp === "string") acceptOffer(m.from, name, m.sdp);
+        break;
+      case "answer": {
+        const p = C.peers.get(m.from);
+        if (p && p.pc.signalingState === "have-local-offer" && typeof m.sdp === "string")
+          p.pc.setRemoteDescription({ type: "answer", sdp: m.sdp }).catch(() => { p.state = "gagal tersambung"; });
+        break;
+      }
+      case "leave":
+        C.remote.delete(m.from); dropPeer(m.from);
+        break;
+    }
+    renderCallBar();
+  }
+
+  function newPeer(peerId, name) {
+    dropPeer(peerId);
+    const pc = new RTCPeerConnection({ iceServers: ICE });
+    for (const t of C.stream.getTracks()) pc.addTrack(t, C.stream);
+    const audio = document.createElement("audio"); audio.autoplay = true; audio.setAttribute("playsinline", ""); audio.hidden = true;
+    document.body.append(audio);
+    const p = { pc, name, audio, state: "menghubungkan…" };
+    pc.ontrack = (e) => { audio.srcObject = e.streams[0]; audio.play().catch(() => {}); };
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+      if (s === "connected") p.state = "tersambung";
+      else if (s === "failed") p.state = "gagal tersambung";
+      else if (s === "disconnected") p.state = "terputus…";
+      renderCallBar();
+    };
+    C.peers.set(peerId, p);
+    return p;
+  }
+  // Non-trickle ICE: wait for candidates (max 2.5 s) so one offer/answer message is enough.
+  function waitIce(pc) {
+    return new Promise((res) => {
+      if (pc.iceGatheringState === "complete") return res();
+      const t = setTimeout(res, 2500);
+      pc.addEventListener("icegatheringstatechange", () => { if (pc.iceGatheringState === "complete") { clearTimeout(t); res(); } });
+    });
+  }
+  async function connectPeer(peerId, name) {
+    if (C.peers.size >= MAX_CALL - 1) return;
+    const p = newPeer(peerId, name);
+    try {
+      await p.pc.setLocalDescription(await p.pc.createOffer());
+      await waitIce(p.pc);
+      if (C.peers.get(peerId) === p) sig({ type: "offer", to: peerId, name: S.myName, sdp: p.pc.localDescription.sdp });
+    } catch { p.state = "gagal tersambung"; renderCallBar(); }
+  }
+  async function acceptOffer(peerId, name, sdp) {
+    const p = newPeer(peerId, name);
+    try {
+      await p.pc.setRemoteDescription({ type: "offer", sdp });
+      await p.pc.setLocalDescription(await p.pc.createAnswer());
+      await waitIce(p.pc);
+      if (C.peers.get(peerId) === p) sig({ type: "answer", to: peerId, name: S.myName, sdp: p.pc.localDescription.sdp });
+    } catch { p.state = "gagal tersambung"; renderCallBar(); }
+  }
+  function dropPeer(peerId) {
+    const p = C.peers.get(peerId); if (!p) return;
+    try { p.pc.close(); } catch {}
+    p.audio.srcObject = null; p.audio.remove();
+    C.peers.delete(peerId);
+  }
+
+  async function joinCall() {
+    if (C.inCall || !C.rt) return;
+    if (!C.online) return toast("Layanan telepon belum tersambung. Coba lagi sebentar.");
+    if (C.remote.size >= MAX_CALL) return toast("Telepon penuh (maksimal " + MAX_CALL + " orang).");
+    ensureAudio(); stopRing();
+    try {
+      C.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    } catch {
+      return toast("Mikrofon tidak bisa dipakai. Izinkan akses mikrofon untuk situs ini di pengaturan browser.");
+    }
+    if (!C.rt) { for (const t of C.stream.getTracks()) t.stop(); C.stream = null; return; }
+    C.inCall = true; C.muted = false; C.startedAt = Date.now(); C.declined = false;
+    sig({ type: "join", name: S.myName });
+    const beat = () => { sig({ type: "hb", name: S.myName }); bumpIdle(); };   // a call counts as activity
+    beat(); C.hbT = setInterval(beat, 4000);
+    renderCallBar();
+  }
+  function hangUp() {
+    if (!C.inCall) return;
+    sig({ type: "leave" });
+    clearInterval(C.hbT); C.hbT = null;
+    for (const id of [...C.peers.keys()]) dropPeer(id);
+    if (C.stream) for (const t of C.stream.getTracks()) t.stop();
+    C.stream = null; C.inCall = false; C.muted = false;
+    renderCallBar();
+  }
+  function startRing() {
+    if (C.ringing) return;
+    C.ringing = true; C.ringStop = Date.now() + 30000;
+    if (document.hidden) document.title = "📞 Panggilan masuk · " + BASE_TITLE;
+    const tone = () => {
+      if (!C.ringing || C.inCall || Date.now() > C.ringStop) return stopRing();
+      ringTone(); C.ringT = setTimeout(tone, 2000);
+    };
+    tone();
+  }
+  function stopRing() { C.ringing = false; clearTimeout(C.ringT); }
+
+  function renderCallBar() {
+    const now = Date.now();
+    for (const [k, v] of C.remote) if (now - v.last > 12000) { C.remote.delete(k); dropPeer(k); }
+    if (!C.remote.size) { C.declined = false; stopRing(); }
+    const btn = $("callBtn"), bar = $("callBar");
+    btn.hidden = !C.pid;
+    btn.disabled = C.inCall || !C.online;
+    btn.title = !C.online ? "Menyambungkan layanan telepon…" : C.inCall ? "Sedang dalam telepon" : C.remote.size ? "Gabung telepon" : "Mulai telepon";
+    const show = !!C.pid && (C.inCall || C.remote.size > 0);
+    bar.hidden = !show;
+    if (!show) return;
+    bar.classList.toggle("ringing", C.ringing && !C.inCall);
+    bar.classList.toggle("live", C.inCall);
+    if (C.inCall) {
+      const s = Math.floor((now - C.startedAt) / 1000);
+      $("callTitle").textContent = "Dalam telepon · " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      const parts = [...C.peers.values()].map((p) => p.name + " (" + p.state + ")");
+      $("callSub").textContent = parts.length ? parts.join(", ") : "Menunggu yang lain bergabung…";
+    } else {
+      const names = [...C.remote.values()].map((v) => v.name);
+      $("callTitle").textContent = C.ringing ? "📞 Panggilan masuk" : "Telepon sedang berlangsung";
+      $("callSub").textContent = names.join(", ") + " di telepon";
+    }
+    $("callJoin").hidden = C.inCall;
+    $("callDecline").hidden = C.inCall || !C.ringing;
+    $("callMute").hidden = !C.inCall;
+    $("callHang").hidden = !C.inCall;
+    $("callMute").textContent = C.muted ? "Nyalakan mik" : "Bisukan";
+    $("callMute").classList.toggle("on", C.muted);
+  }
+
+  $("callBtn").addEventListener("click", joinCall);
+  $("callJoin").addEventListener("click", joinCall);
+  $("callDecline").addEventListener("click", () => { C.declined = true; stopRing(); renderCallBar(); });
+  $("callMute").addEventListener("click", () => {
+    if (!C.stream) return;
+    C.muted = !C.muted;
+    for (const t of C.stream.getAudioTracks()) t.enabled = !C.muted;
+    renderCallBar();
+  });
+  $("callHang").addEventListener("click", hangUp);
+  window.addEventListener("pagehide", () => { if (C.inCall) hangUp(); });
+
   /* ---------- settings ---------- */
   $("settingsBtn").addEventListener("click", () => {
     const o = S.open.get(S.current); if (!o) return;
@@ -1351,6 +1621,7 @@ button { cursor: pointer; }
   /* ---------- locking ---------- */
   function lockAll() {
     if (!S.open.size) return;
+    callDetach();
     for (const id of S.open.keys()) watchOnLock(id);
     stopPoll(); S.open.clear(); S.updates.clear(); S.reactions.clear(); clearReply(); S.lastAt = null; S.editing = null;
     input.value = ""; autoGrow();
