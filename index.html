@@ -158,9 +158,20 @@ button { cursor: pointer; }
 
 /* project timeline */
 .chat-head {
-  display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 8px; row-gap: 8px; flex-wrap: wrap;
+  padding: 12px 14px; border-bottom: 1px solid var(--line);
 }
-.chat-head .t { min-width: 0; flex: 1; }
+.chat-head .t { min-width: 0; flex: 1 1 180px; }
+.chat-head .t .chip { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Header buttons sit in one group that wraps under the title instead of overlapping it;
+   labels drop to icon-only when the timeline pane itself is narrow. */
+.main { container-type: inline-size; }
+.head-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+.head-actions .btn { padding: 8px 10px; white-space: nowrap; flex: none; }
+@container (max-width: 860px) {
+  .head-actions .lbl { display: none; }
+  .head-actions .btn.armed .lbl { display: inline; }
+}
 .chat-head h2 {
   margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 19px; line-height: 1.2;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -432,11 +443,13 @@ button { cursor: pointer; }
           <h2 id="chatTitle">Proyek</h2>
           <span class="chip" id="chatSub">Linimasa update</span>
         </div>
-        <button class="btn btn-ghost" type="button" id="callBtn" aria-label="Telepon" title="Telepon" hidden><svg class="icon"><use href="#i-phone"/></svg><span class="hide-sm">Telepon</span></button>
-        <button class="btn btn-ghost bell" type="button" id="soundBtn" aria-pressed="false" aria-label="Suara notifikasi mati" title="Suara notifikasi mati"><svg class="icon"><use id="soundIcon" href="#i-bell-off"/></svg></button>
-        <button class="btn btn-ghost" type="button" id="settingsBtn" aria-label="Pengaturan proyek"><svg class="icon"><use href="#i-gear"/></svg><span class="hide-sm">Pengaturan</span></button>
-        <button class="btn btn-ghost btn-danger" type="button" id="clearAllBtn" aria-label="Hapus semua update" title="Hapus semua update"><svg class="icon"><use href="#i-trash"/></svg><span class="hide-sm" id="clearAllLabel">Hapus semua</span></button>
-        <button class="btn" type="button" id="lockBtn"><svg class="icon"><use href="#i-lock"/></svg>Tutup</button>
+        <div class="head-actions">
+          <button class="btn btn-ghost" type="button" id="callBtn" aria-label="Telepon" title="Telepon" hidden><svg class="icon"><use href="#i-phone"/></svg><span class="lbl">Telepon</span></button>
+          <button class="btn btn-ghost bell" type="button" id="soundBtn" aria-pressed="false" aria-label="Suara notifikasi mati" title="Suara notifikasi mati"><svg class="icon"><use id="soundIcon" href="#i-bell-off"/></svg></button>
+          <button class="btn btn-ghost" type="button" id="settingsBtn" aria-label="Pengaturan proyek" title="Pengaturan"><svg class="icon"><use href="#i-gear"/></svg><span class="lbl">Pengaturan</span></button>
+          <button class="btn btn-ghost btn-danger" type="button" id="clearAllBtn" aria-label="Hapus semua update" title="Hapus semua update"><svg class="icon"><use href="#i-trash"/></svg><span class="lbl" id="clearAllLabel">Hapus semua</span></button>
+          <button class="btn" type="button" id="lockBtn" aria-label="Tutup proyek" title="Tutup proyek"><svg class="icon"><use href="#i-lock"/></svg><span class="lbl">Tutup</span></button>
+        </div>
       </div>
       <div class="call-bar" id="callBar" role="status" hidden>
         <span class="call-dot" aria-hidden="true"></span>
