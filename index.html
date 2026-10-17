@@ -6,6 +6,10 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <title>Progress Update</title>
+<script>
+  // Apply the saved text size before first paint so the page doesn't jump.
+  try { var t = { small: 0.9, large: 1.15, xl: 1.3 }[localStorage.getItem("pu-text")]; if (t) document.documentElement.style.setProperty("--text-scale", t); } catch (e) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -38,9 +42,13 @@
 }
 
 html, body { height: 100%; margin: 0; }
+/* Text size (per device, like WhatsApp): Small / Medium / Large / Extra large set --text-scale.
+   Phones start a step larger than desktop. */
+html { font-size: calc(16px * var(--text-scale, 1)); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (max-width: 760px) { html { font-size: calc(17.5px * var(--text-scale, 1)); } }
 body {
   background: var(--bg); color: var(--ink);
-  font-family: var(--f-body); font-size: 15px; line-height: 1.5;
+  font-family: var(--f-body); font-size: 0.9375rem; line-height: 1.5;
   padding-inline: 16px;
   padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
@@ -63,10 +71,10 @@ button { cursor: pointer; }
 /* ---- sidebar ---- */
 .brand { padding: 18px 18px 12px; display: grid; gap: 2px; }
 .brand h1 {
-  margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 26px;
+  margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 1.625rem;
   letter-spacing: -0.02em; line-height: 1.1;
 }
-.brand p { margin: 0; color: var(--muted); font-size: 13px; }
+.brand p { margin: 0; color: var(--muted); font-size: 0.8125rem; }
 .side-actions { padding: 0 14px 12px; }
 .side-label { padding: 4px 20px 6px; margin: 0; }
 .rooms { list-style: none; margin: 0; padding: 0 8px 12px; overflow-y: auto; flex: 1; display: grid; gap: 2px; align-content: start; }
@@ -78,18 +86,27 @@ button { cursor: pointer; }
 .room-btn[aria-current="true"] { background: var(--accent-soft); }
 .room-glyph {
   width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
-  background: var(--theirs); color: var(--accent); font-family: var(--f-display); font-weight: 800; font-size: 16px;
+  background: var(--theirs); color: var(--accent); font-family: var(--f-display); font-weight: 800; font-size: 1rem;
 }
 .room-btn[aria-current="true"] .room-glyph { background: var(--accent); color: var(--accent-ink); }
 .room-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .room-name.locked { color: var(--muted); font-weight: 500; }
-.room-sub { font-size: 12px; color: var(--muted); }
+.room-sub { font-size: 0.75rem; color: var(--muted); }
 .room-sub.new { color: var(--accent); font-weight: 600; }
-.side-empty { padding: 8px 18px; color: var(--muted); font-size: 13px; }
+.side-empty { padding: 8px 18px; color: var(--muted); font-size: 0.8125rem; }
 .side-foot {
-  border-top: 1px solid var(--line); padding: 10px 16px; font-family: var(--f-mono);
-  font-size: 11px; color: var(--muted); letter-spacing: 0.02em;
+  border-top: 1px solid var(--line); padding: 6px 8px 6px 16px; font-family: var(--f-mono);
+  font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
+.text-btn { font-family: var(--f-display); font-weight: 800; font-size: 1rem; padding: 6px 10px; color: var(--ink); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button {
+  border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 14px; line-height: 1.2;
+}
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.seg button:nth-child(1) { font-size: 0.875rem; } .seg button:nth-child(2) { font-size: 1rem; }
+.seg button:nth-child(3) { font-size: 1.125rem; } .seg button:nth-child(4) { font-size: 1.25rem; }
 
 /* ---- buttons ---- */
 .btn {
@@ -112,25 +129,25 @@ button { cursor: pointer; }
 .view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .center { flex: 1; display: grid; place-items: center; padding: 24px 16px; overflow-y: auto; }
 .card { width: 100%; max-width: 400px; display: grid; gap: 16px; }
-.eyebrow { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin: 0; }
-.h2 { font-family: var(--f-display); font-weight: 800; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
-.h3 { font-family: var(--f-display); font-weight: 600; font-size: 18px; margin: 0; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin: 0; }
+.h2 { font-family: var(--f-display); font-weight: 800; font-size: 1.75rem; line-height: 1.1; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+.h3 { font-family: var(--f-display); font-weight: 600; font-size: 1.125rem; margin: 0; }
 .lede { color: var(--muted); margin: 0; }
 
 .welcome-steps { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .welcome-steps li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; }
 .welcome-steps b {
   width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent);
-  display: grid; place-items: center; font-family: var(--f-mono); font-size: 13px;
+  display: grid; place-items: center; font-family: var(--f-mono); font-size: 0.8125rem;
 }
 
 .field { display: grid; gap: 6px; text-align: left; width: 100%; }
-.field label { font-weight: 600; font-size: 13px; }
+.field label { font-weight: 600; font-size: 0.8125rem; }
 .field input, .field select {
   border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 12px; width: 100%;
 }
 .field input:focus, .field select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
-.hint { font-size: 12px; color: var(--muted); }
+.hint { font-size: 0.75rem; color: var(--muted); }
 .hint.bad { color: var(--danger); }
 .hint.ok { color: var(--accent); }
 .form-row { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -150,8 +167,8 @@ button { cursor: pointer; }
   display: grid; place-items: center;
 }
 .lock-badge .icon { width: 26px; height: 26px; }
-.lock-title { font-family: var(--f-display); font-weight: 800; font-size: 22px; margin: 0; line-height: 1.15; }
-.lock-msg { min-height: 20px; font-size: 13px; color: var(--muted); }
+.lock-title { font-family: var(--f-display); font-weight: 800; font-size: 1.375rem; margin: 0; line-height: 1.15; }
+.lock-msg { min-height: 20px; font-size: 0.8125rem; color: var(--muted); }
 .lock-msg.bad { color: var(--danger); }
 .shake { animation: shake .4s; }
 @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
@@ -173,10 +190,10 @@ button { cursor: pointer; }
   .head-actions .btn.armed .lbl { display: inline; }
 }
 .chat-head h2 {
-  margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 19px; line-height: 1.2;
+  margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 1.1875rem; line-height: 1.2;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.chip { font-family: var(--f-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
+.chip { font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em; }
 .back { display: none; }
 .call-bar {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
@@ -186,24 +203,24 @@ button { cursor: pointer; }
 .call-bar.ringing .call-dot, .call-bar.live .call-dot { animation: callpulse 1s ease-in-out infinite alternate; }
 @keyframes callpulse { from { opacity: 1; transform: scale(1); } to { opacity: .35; transform: scale(.7); } }
 .call-info { flex: 1; min-width: 160px; display: grid; }
-.call-info strong { font-size: 14px; font-variant-numeric: tabular-nums; }
+.call-info strong { font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 .call-people { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .person {
   display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 3px; border-radius: 999px;
-  background: var(--panel); border: 1px solid var(--line); font-size: 12px; max-width: 100%;
+  background: var(--panel); border: 1px solid var(--line); font-size: 0.75rem; max-width: 100%;
 }
 .person .av {
   width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; flex: none;
-  background: var(--theirs); color: var(--accent); font-weight: 700; font-size: 12px;
+  background: var(--theirs); color: var(--accent); font-weight: 700; font-size: 0.75rem;
   box-shadow: 0 0 0 2px transparent; transition: box-shadow .15s;
 }
 .person.speaking .av { box-shadow: 0 0 0 2px var(--accent), 0 0 0 5px var(--accent-soft); }
 .person .nm { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 14ch; }
 .person .st { color: var(--muted); white-space: nowrap; }
 .person .st.bad { color: var(--danger); }
-.person .mic { font-size: 12px; }
+.person .mic { font-size: 0.75rem; }
 .call-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.call-actions .btn { padding: 6px 12px; font-size: 13px; }
+.call-actions .btn { padding: 6px 12px; font-size: 0.8125rem; }
 .btn-hang { background: var(--danger); color: var(--panel); border-color: var(--danger); }
 .btn.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .call-bar .call-dot { animation: none !important; } }
@@ -212,7 +229,7 @@ button { cursor: pointer; }
 
 .msgs { flex: 1; overflow-y: auto; padding: 12px 20px 20px; display: flex; flex-direction: column; }
 .day {
-  font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+  font-family: var(--f-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
   color: var(--muted); margin: 16px 0 4px;
 }
 .day:first-child { margin-top: 4px; }
@@ -223,15 +240,15 @@ button { cursor: pointer; }
 }
 .msg.me::before { background: var(--accent); }
 .entry-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.who { font-weight: 600; font-size: 14px; }
-.time { font-family: var(--f-mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.who { font-weight: 600; font-size: 0.875rem; }
+.time { font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .bubble { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 2px; max-width: 68ch; }
-.bubble.sealed { font-size: 13px; color: var(--muted); font-style: italic; }
-.edited { font-size: 11px; color: var(--muted); font-style: italic; }
+.bubble.sealed { font-size: 0.8125rem; color: var(--muted); font-style: italic; }
+.edited { font-size: 0.75rem; color: var(--muted); font-style: italic; }
 .actions { margin-left: auto; display: flex; gap: 2px; align-self: center; }
 .act {
   height: 28px; min-width: 28px; padding: 0 6px; border: 0; border-radius: 8px; background: none; color: var(--muted);
-  display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.75rem; font-weight: 600;
 }
 .act .icon { width: 16px; height: 16px; }
 .act:hover { background: var(--theirs); color: var(--accent); }
@@ -243,8 +260,8 @@ button { cursor: pointer; }
 }
 .quote:hover { background: var(--accent-soft); }
 .quote.gone { border-left-color: var(--line); cursor: default; }
-.qn { font-weight: 600; color: var(--accent); font-size: 12px; }
-.qt { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qn { font-weight: 600; color: var(--accent); font-size: 0.75rem; }
+.qt { color: var(--muted); font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .msg.flash { animation: flash 1.4s ease-out; }
 @keyframes flash { from { background: var(--accent-soft); } to { background: transparent; } }
 .reply-bar { border-top: 1px solid var(--line); padding: 8px 12px 0; display: flex; gap: 8px; align-items: center; }
@@ -260,10 +277,10 @@ button { cursor: pointer; }
   display: block; max-width: 100%; border-radius: 10px; background: var(--theirs); cursor: zoom-in;
   -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
 }
-.photo-ph { display: grid; place-items: center; color: var(--muted); font-size: 12px; cursor: default; }
+.photo-ph { display: grid; place-items: center; color: var(--muted); font-size: 0.75rem; cursor: default; }
 .menu-item {
   display: flex; align-items: center; gap: 8px; padding: 9px 14px; border: 0; background: none;
-  border-radius: 8px; text-align: left; font-size: 14px; white-space: nowrap;
+  border-radius: 8px; text-align: left; font-size: 0.875rem; white-space: nowrap;
 }
 .menu-item:hover, .menu-item:focus-visible { background: var(--theirs); }
 /* Camera and photo viewer are deliberately dark in both themes, like a camera app. */
@@ -286,18 +303,18 @@ button { cursor: pointer; }
 .reacts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .react-chip {
   border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 1px 9px 1px 7px;
-  font-size: 13px; line-height: 22px; display: inline-flex; gap: 5px; align-items: center; font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem; line-height: 22px; display: inline-flex; gap: 5px; align-items: center; font-variant-numeric: tabular-nums;
 }
 .react-chip:hover { border-color: var(--accent); }
 .react-chip.mine { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-.react-chip .em { font-size: 15px; }
-.emoji-btn { height: 42px; width: 42px; padding: 0; font-size: 20px; border-radius: 12px; flex: none; }
+.react-chip .em { font-size: 0.9375rem; }
+.emoji-btn { height: 42px; width: 42px; padding: 0; font-size: 1.25rem; border-radius: 12px; flex: none; }
 .emoji-pop {
   position: fixed; z-index: 30; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
   padding: 6px; display: grid; gap: 2px; max-height: 260px; overflow-y: auto;
   box-shadow: 0 16px 40px -16px rgba(0,0,0,.4);
 }
-.emo { width: 36px; height: 36px; border: 0; background: none; border-radius: 8px; font-size: 20px; line-height: 1; padding: 0; }
+.emo { width: 36px; height: 36px; border: 0; background: none; border-radius: 8px; font-size: 1.25rem; line-height: 1; padding: 0; }
 .emo:hover, .emo:focus-visible { background: var(--theirs); }
 .edit-box { display: grid; gap: 8px; margin-top: 6px; max-width: 68ch; }
 .edit-box textarea {
@@ -306,9 +323,9 @@ button { cursor: pointer; }
 }
 .edit-box textarea:focus { outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
 .edit-box .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.edit-box .btn { padding: 6px 12px; font-size: 13px; }
+.edit-box .btn { padding: 6px 12px; font-size: 0.8125rem; }
 .empty-chat { margin: auto; text-align: center; color: var(--muted); max-width: 280px; display: grid; gap: 6px; }
-.empty-chat strong { color: var(--ink); font-family: var(--f-display); font-size: 18px; }
+.empty-chat strong { color: var(--ink); font-family: var(--f-display); font-size: 1.125rem; }
 
 .composer { border-top: 1px solid var(--line); padding: 10px 12px; display: flex; gap: 8px; align-items: flex-end; }
 .composer textarea {
@@ -322,12 +339,12 @@ button { cursor: pointer; }
 .settings { flex: 1; overflow-y: auto; padding: 20px 16px 28px; }
 .settings-inner { max-width: 520px; margin-inline: auto; display: grid; gap: 14px; }
 .section { border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 12px; }
-.section p { margin: 0; color: var(--muted); font-size: 13px; }
+.section p { margin: 0; color: var(--muted); font-size: 0.8125rem; }
 .section.danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); }
 
 .toast {
   position: absolute; left: 50%; bottom: 80px; transform: translateX(-50%); background: var(--ink); color: var(--panel);
-  padding: 8px 14px; border-radius: 10px; font-size: 13px; max-width: calc(100% - 32px); text-align: center; z-index: 5;
+  padding: 8px 14px; border-radius: 10px; font-size: 0.8125rem; max-width: calc(100% - 32px); text-align: center; z-index: 5;
 }
 
 @media (max-width: 760px) {
@@ -339,6 +356,13 @@ button { cursor: pointer; }
   .back { display: inline-flex; }
   .msgs { padding-inline: 14px; }
   .hide-sm { display: none; }
+  /* Bigger tap targets on phones; 16px+ inputs stop iOS from zooming in on focus. */
+  .act { height: 36px; min-width: 36px; }
+  .act .icon { width: 18px; height: 18px; }
+  input, textarea, select { font-size: max(16px, 1rem); }
+  .composer { gap: 4px; padding-inline: 8px; }
+  .composer .emoji-btn { width: 36px; }
+  .send { padding: 0 14px; }
 }
 @media (prefers-reduced-motion: reduce) { .shake, .msg.flash { animation: none; } }
 </style>
@@ -374,7 +398,10 @@ button { cursor: pointer; }
     <p class="eyebrow side-label">Projects</p>
     <ul class="rooms" id="roomList" aria-label="Project list"></ul>
     <div class="side-empty" id="sideEmpty">Loading projects…</div>
-    <div class="side-foot" id="syncState">Connecting…</div>
+    <div class="side-foot">
+      <span id="syncState">Connecting…</span>
+      <button class="btn btn-ghost text-btn" type="button" id="textSizeBtn" aria-label="Text size" title="Text size">Aa</button>
+    </div>
   </aside>
 
   <main class="pane main">
@@ -522,8 +549,8 @@ button { cursor: pointer; }
         <button class="btn btn-ghost emoji-btn" type="button" id="emojiBtn" aria-label="Insert emoji" title="Insert emoji">😊</button>
         <button class="btn btn-ghost emoji-btn" type="button" id="attachBtn" aria-label="Attach photo" title="Attach photo"><svg class="icon"><use href="#i-camera"/></svg></button>
         <input type="file" id="fileInput" accept="image/*" hidden>
-        <textarea id="msgInput" rows="1" maxlength="2000" placeholder="Write a progress update…" aria-label="Progress update"></textarea>
-        <button class="btn btn-primary send" type="submit" id="sendBtn">Posting</button>
+        <textarea id="msgInput" rows="1" maxlength="2000" placeholder="Write an update…" aria-label="Progress update"></textarea>
+        <button class="btn btn-primary send" type="submit" id="sendBtn">Post</button>
       </form>
     </section>
 
@@ -542,6 +569,12 @@ button { cursor: pointer; }
               <input id="shareLink" readonly aria-label="Project link" class="field-like" style="border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font-family:var(--f-mono);font-size:12px">
               <button class="btn" type="button" id="copyLink">Copy</button>
             </div>
+          </div>
+
+          <div class="section">
+            <h3 class="h3">Text size</h3>
+            <p>Applies to this device only.</p>
+            <div class="seg" id="textSizeOpts" role="group" aria-label="Text size"></div>
           </div>
 
           <div class="section">
@@ -921,7 +954,38 @@ button { cursor: pointer; }
     } catch { $("adminHint").textContent = "Couldn't connect. Try again."; $("adminHint").className = "hint bad"; }
     finally { $("adminSave").disabled = false; }
   });
-  window.addEventListener("hashchange", () => { if (location.hash === "#kelola") showAdmin(); });
+  // Following a project link (or #kelola) in an already-open tab.
+  window.addEventListener("hashchange", () => {
+    const want = location.hash.slice(1);
+    if (want === "kelola") showAdmin();
+    else if (want && want !== S.current && S.projects.some((p) => p.id === want)) selectProject(want);
+  });
+
+  /* ---------- text size (per device) ---------- */
+  const TEXT_SIZES = [["small", "Small", 0.9], ["medium", "Medium", 1], ["large", "Large", 1.15], ["xl", "Extra large", 1.3]];
+  let TEXT = store.get("pu-text") || "medium";
+  function applyText() {
+    const t = TEXT_SIZES.find((x) => x[0] === TEXT) || TEXT_SIZES[1];
+    TEXT = t[0];
+    document.documentElement.style.setProperty("--text-scale", t[2]);
+    const box = $("textSizeOpts"); box.textContent = "";
+    for (const [v, label] of TEXT_SIZES) {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = label;
+      b.setAttribute("aria-pressed", v === TEXT ? "true" : "false");
+      b.addEventListener("click", () => setText(v));
+      box.append(b);
+    }
+  }
+  function setText(v) {
+    TEXT = v; store.set("pu-text", v); applyText();
+    if (!$("vChat").hidden) renderUpdates();
+    toast("Text size: " + TEXT_SIZES.find((x) => x[0] === v)[1]);
+  }
+  $("textSizeBtn").addEventListener("click", (e) => {
+    if (!$("emojiPop").hidden) return closePicker();
+    openMenu(e.currentTarget, TEXT_SIZES.map(([v, label]) => [(v === TEXT ? "✓ " : "  ") + label, () => setText(v)]));
+  });
+  applyText();
   $("adminForget").addEventListener("click",() => { forgetAdmin(); leaveAdmin(); toast("Creator code removed from this device."); });
 
   /* ---------- unlock ---------- */
