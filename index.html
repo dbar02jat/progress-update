@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -366,15 +366,15 @@ button { cursor: pointer; }
   <aside class="pane side">
     <div class="brand">
       <h1>Progress Update</h1>
-      <p>Catatan progres proyek tim.</p>
+      <p>Team project progress notes.</p>
     </div>
     <div class="side-actions">
-      <button class="btn btn-primary btn-block" id="newRoomBtn" type="button" hidden><svg class="icon"><use href="#i-plus"/></svg>Proyek baru</button>
+      <button class="btn btn-primary btn-block" id="newRoomBtn" type="button" hidden><svg class="icon"><use href="#i-plus"/></svg>New project</button>
     </div>
-    <p class="eyebrow side-label">Proyek</p>
-    <ul class="rooms" id="roomList" aria-label="Daftar proyek"></ul>
-    <div class="side-empty" id="sideEmpty">Memuat proyek…</div>
-    <div class="side-foot" id="syncState">Menghubungkan…</div>
+    <p class="eyebrow side-label">Projects</p>
+    <ul class="rooms" id="roomList" aria-label="Project list"></ul>
+    <div class="side-empty" id="sideEmpty">Loading projects…</div>
+    <div class="side-foot" id="syncState">Connecting…</div>
   </aside>
 
   <main class="pane main">
@@ -382,14 +382,14 @@ button { cursor: pointer; }
     <section class="view" id="vWelcome">
       <div class="center">
         <div class="card">
-          <p class="eyebrow">Mulai</p>
-          <h2 class="h2">Semua update proyek di satu tempat.</h2>
+          <p class="eyebrow">Get started</p>
+          <h2 class="h2">All your project updates in one place.</h2>
           <ul class="welcome-steps">
-            <li><b>1</b><span>Buka link proyek yang dibagikan pengelola tim.</span></li>
-            <li><b>2</b><span>Masukkan kata sandi proyek.</span></li>
-            <li><b>3</b><span>Tulis update progres di linimasa proyek.</span></li>
+            <li><b>1</b><span>Open the project link your team lead shared.</span></li>
+            <li><b>2</b><span>Enter the project password.</span></li>
+            <li><b>3</b><span>Post progress updates on the project timeline.</span></li>
           </ul>
-          <p class="lede">Pilih proyek di kiri untuk mulai.</p>
+          <p class="lede">Pick a project on the left to start.</p>
         </div>
       </div>
     </section>
@@ -398,17 +398,17 @@ button { cursor: pointer; }
     <section class="view" id="vAdmin" hidden>
       <div class="center">
         <form class="card" id="adminForm" autocomplete="off">
-          <p class="eyebrow">Pengelola</p>
-          <h2 class="h2">Kode pembuat</h2>
-          <p class="lede" id="adminLede">Masukkan kode pembuat untuk mengaktifkan tombol Proyek baru di perangkat ini.</p>
+          <p class="eyebrow">Admin</p>
+          <h2 class="h2">Creator code</h2>
+          <p class="lede" id="adminLede">Enter the creator code to enable the New project button on this device.</p>
           <div class="field">
-            <label for="adminCode">Kode</label>
+            <label for="adminCode">Code</label>
             <input id="adminCode" type="password" maxlength="200" autocomplete="off">
-            <span class="hint" id="adminHint">Kode disimpan hanya di browser ini.</span>
+            <span class="hint" id="adminHint">The code is stored only in this browser.</span>
           </div>
           <div class="form-row">
-            <button class="btn" type="button" id="adminForget" hidden>Hapus dari perangkat ini</button>
-            <button class="btn btn-primary" type="submit" id="adminSave">Simpan</button>
+            <button class="btn" type="button" id="adminForget" hidden>Remove from this device</button>
+            <button class="btn btn-primary" type="submit" id="adminSave">Save</button>
           </div>
         </form>
       </div>
@@ -418,40 +418,40 @@ button { cursor: pointer; }
     <section class="view" id="vCreate" hidden>
       <div class="center">
         <form class="card" id="createForm" autocomplete="off">
-          <button class="btn btn-ghost back" type="button" data-back style="justify-self:start"><svg class="icon"><use href="#i-back"/></svg>Kembali</button>
-          <p class="eyebrow">Proyek baru</p>
-          <h2 class="h2">Siapkan proyek</h2>
+          <button class="btn btn-ghost back" type="button" data-back style="justify-self:start"><svg class="icon"><use href="#i-back"/></svg>Back</button>
+          <p class="eyebrow">New project</p>
+          <h2 class="h2">Set up a project</h2>
           <div class="field">
-            <label for="roomName">Nama proyek</label>
-            <input id="roomName" maxlength="60" placeholder="mis. Renovasi kantor Q4" required>
-            <span class="hint">Terlihat di daftar proyek. Isi update hanya terbuka dengan kata sandi.</span>
+            <label for="roomName">Project name</label>
+            <input id="roomName" maxlength="60" placeholder="e.g. Q4 office renovation" required>
+            <span class="hint">Shown in the project list. Updates can only be read with the password.</span>
           </div>
           <div class="field">
-            <label for="pass1">Kata sandi</label>
+            <label for="pass1">Password</label>
             <input id="pass1" type="password" maxlength="128" autocomplete="new-password" required>
-            <span class="hint" id="pass1Hint">Minimal 10 karakter dengan huruf. Gabungan 3–4 kata acak paling kuat.</span>
+            <span class="hint" id="pass1Hint">At least 10 characters, including letters. 3–4 random words are strongest.</span>
           </div>
           <div class="field">
-            <label for="pass2">Ulangi kata sandi</label>
+            <label for="pass2">Repeat password</label>
             <input id="pass2" type="password" maxlength="128" autocomplete="new-password" required>
-            <span class="hint" id="pass2Hint">Kata sandi yang lupa tidak bisa dipulihkan.</span>
+            <span class="hint" id="pass2Hint">A forgotten password can't be recovered.</span>
           </div>
           <div class="field">
-            <label for="retention">Hapus update otomatis setelah</label>
+            <label for="retention">Auto-delete updates after</label>
             <select id="retention">
-              <option value="1">1 hari</option>
-              <option value="3">3 hari</option>
-              <option value="7" selected>7 hari</option>
-              <option value="30">30 hari</option>
+              <option value="1">1 day</option>
+              <option value="3">3 days</option>
+              <option value="7" selected>7 days</option>
+              <option value="30">30 days</option>
             </select>
           </div>
           <div class="field">
-            <label for="createName">Nama tampilan kamu</label>
-            <input id="createName" maxlength="40" placeholder="mis. Rina">
+            <label for="createName">Your display name</label>
+            <input id="createName" maxlength="40" placeholder="e.g. Rina">
           </div>
           <div class="form-row">
-            <button class="btn" type="button" id="cancelCreate">Batal</button>
-            <button class="btn btn-primary" type="submit" id="createSubmit"><svg class="icon"><use href="#i-folder"/></svg><span>Buat proyek</span></button>
+            <button class="btn" type="button" id="cancelCreate">Cancel</button>
+            <button class="btn btn-primary" type="submit" id="createSubmit"><svg class="icon"><use href="#i-folder"/></svg><span>Create project</span></button>
           </div>
         </form>
       </div>
@@ -460,23 +460,23 @@ button { cursor: pointer; }
     <!-- lock -->
     <section class="view" id="vLock" hidden>
       <div class="chat-head">
-        <button class="btn btn-ghost back" type="button" data-back aria-label="Kembali ke daftar proyek"><svg class="icon"><use href="#i-back"/></svg></button>
-        <div class="t"><span class="chip">Butuh kata sandi</span></div>
+        <button class="btn btn-ghost back" type="button" data-back aria-label="Back to project list"><svg class="icon"><use href="#i-back"/></svg></button>
+        <div class="t"><span class="chip">Password required</span></div>
       </div>
       <div class="lock-wrap">
         <form class="lock-card" id="unlockForm" autocomplete="off">
           <div class="lock-badge"><svg class="icon"><use href="#i-lock"/></svg></div>
-          <h2 class="lock-title" id="lockTitle">Proyek</h2>
+          <h2 class="lock-title" id="lockTitle">Project</h2>
           <span class="chip" id="lockSub"></span>
           <div class="field">
-            <label for="unlockPass">Kata sandi</label>
+            <label for="unlockPass">Password</label>
             <input id="unlockPass" type="password" maxlength="128" autocomplete="current-password" required>
           </div>
           <div class="field">
-            <label for="unlockName">Nama tampilan kamu</label>
-            <input id="unlockName" maxlength="40" placeholder="mis. Rina">
+            <label for="unlockName">Your display name</label>
+            <input id="unlockName" maxlength="40" placeholder="e.g. Rina">
           </div>
-          <button class="btn btn-primary btn-block" type="submit" id="unlockBtn">Buka proyek</button>
+          <button class="btn btn-primary btn-block" type="submit" id="unlockBtn">Open project</button>
           <div class="lock-msg" id="lockMsg"></div>
         </form>
       </div>
@@ -485,44 +485,44 @@ button { cursor: pointer; }
     <!-- timeline -->
     <section class="view" id="vChat" hidden>
       <div class="chat-head">
-        <button class="btn btn-ghost back" type="button" data-back aria-label="Kembali ke daftar proyek"><svg class="icon"><use href="#i-back"/></svg></button>
+        <button class="btn btn-ghost back" type="button" data-back aria-label="Back to project list"><svg class="icon"><use href="#i-back"/></svg></button>
         <div class="t">
-          <h2 id="chatTitle">Proyek</h2>
-          <span class="chip" id="chatSub">Linimasa update</span>
+          <h2 id="chatTitle">Project</h2>
+          <span class="chip" id="chatSub">Update timeline</span>
         </div>
         <div class="head-actions">
-          <button class="btn btn-ghost" type="button" id="callBtn" aria-label="Telepon" title="Telepon" hidden><svg class="icon"><use href="#i-phone"/></svg><span class="lbl">Telepon</span></button>
-          <button class="btn btn-ghost bell" type="button" id="soundBtn" aria-pressed="false" aria-label="Suara notifikasi mati" title="Suara notifikasi mati"><svg class="icon"><use id="soundIcon" href="#i-bell-off"/></svg></button>
-          <button class="btn btn-ghost" type="button" id="settingsBtn" aria-label="Pengaturan proyek" title="Pengaturan"><svg class="icon"><use href="#i-gear"/></svg><span class="lbl">Pengaturan</span></button>
-          <button class="btn btn-ghost btn-danger" type="button" id="clearAllBtn" aria-label="Hapus semua update" title="Hapus semua update"><svg class="icon"><use href="#i-trash"/></svg><span class="lbl" id="clearAllLabel">Hapus semua</span></button>
-          <button class="btn" type="button" id="lockBtn" aria-label="Tutup proyek" title="Tutup proyek"><svg class="icon"><use href="#i-lock"/></svg><span class="lbl">Tutup</span></button>
+          <button class="btn btn-ghost" type="button" id="callBtn" aria-label="Call" title="Call" hidden><svg class="icon"><use href="#i-phone"/></svg><span class="lbl">Call</span></button>
+          <button class="btn btn-ghost bell" type="button" id="soundBtn" aria-pressed="false" aria-label="Sound notifications off" title="Sound notifications off"><svg class="icon"><use id="soundIcon" href="#i-bell-off"/></svg></button>
+          <button class="btn btn-ghost" type="button" id="settingsBtn" aria-label="Project settings" title="Settings"><svg class="icon"><use href="#i-gear"/></svg><span class="lbl">Settings</span></button>
+          <button class="btn btn-ghost btn-danger" type="button" id="clearAllBtn" aria-label="Delete all updates" title="Delete all updates"><svg class="icon"><use href="#i-trash"/></svg><span class="lbl" id="clearAllLabel">Delete all</span></button>
+          <button class="btn" type="button" id="lockBtn" aria-label="Lock project" title="Lock project"><svg class="icon"><use href="#i-lock"/></svg><span class="lbl">Lock</span></button>
         </div>
       </div>
       <div class="call-bar" id="callBar" role="status" hidden>
         <span class="call-dot" aria-hidden="true"></span>
-        <div class="call-info"><strong id="callTitle"></strong><div class="call-people" id="callPeople" aria-label="Peserta telepon"></div></div>
+        <div class="call-info"><strong id="callTitle"></strong><div class="call-people" id="callPeople" aria-label="Call participants"></div></div>
         <div class="call-actions">
-          <button class="btn btn-primary" type="button" id="callJoin">Gabung</button>
-          <button class="btn" type="button" id="callDecline">Tolak</button>
-          <button class="btn" type="button" id="callMute">Bisukan</button>
-          <button class="btn btn-hang" type="button" id="callHang">Tutup telepon</button>
+          <button class="btn btn-primary" type="button" id="callJoin">Join</button>
+          <button class="btn" type="button" id="callDecline">Decline</button>
+          <button class="btn" type="button" id="callMute">Mute</button>
+          <button class="btn btn-hang" type="button" id="callHang">Hang up</button>
         </div>
       </div>
       <div class="msgs" id="msgs" aria-live="polite"></div>
       <div class="reply-bar" id="replyBar" hidden>
         <div class="quote" id="replyQuote"><span class="qn" id="replyName"></span><span class="qt" id="replyText"></span></div>
-        <button class="act" type="button" id="replyCancel" aria-label="Batal membalas" title="Batal membalas"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+        <button class="act" type="button" id="replyCancel" aria-label="Cancel reply" title="Cancel reply"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
       </div>
       <div class="attach-bar" id="attachBar" hidden>
-        <canvas id="attachPreview" aria-label="Pratinjau foto"></canvas>
+        <canvas id="attachPreview" aria-label="Photo preview"></canvas>
         <span class="hint" id="attachInfo"></span>
-        <button class="act" type="button" id="attachRemove" aria-label="Batalkan foto" title="Batalkan foto"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+        <button class="act" type="button" id="attachRemove" aria-label="Remove photo" title="Remove photo"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
       </div>
       <form class="composer" id="composer" autocomplete="off">
-        <button class="btn btn-ghost emoji-btn" type="button" id="emojiBtn" aria-label="Sisipkan emoji" title="Sisipkan emoji">😊</button>
-        <button class="btn btn-ghost emoji-btn" type="button" id="attachBtn" aria-label="Lampirkan foto" title="Lampirkan foto"><svg class="icon"><use href="#i-camera"/></svg></button>
+        <button class="btn btn-ghost emoji-btn" type="button" id="emojiBtn" aria-label="Insert emoji" title="Insert emoji">😊</button>
+        <button class="btn btn-ghost emoji-btn" type="button" id="attachBtn" aria-label="Attach photo" title="Attach photo"><svg class="icon"><use href="#i-camera"/></svg></button>
         <input type="file" id="fileInput" accept="image/*" hidden>
-        <textarea id="msgInput" rows="1" maxlength="2000" placeholder="Tulis update progres…" aria-label="Update progres"></textarea>
+        <textarea id="msgInput" rows="1" maxlength="2000" placeholder="Write a progress update…" aria-label="Progress update"></textarea>
         <button class="btn btn-primary send" type="submit" id="sendBtn">Posting</button>
       </form>
     </section>
@@ -530,55 +530,55 @@ button { cursor: pointer; }
     <!-- settings -->
     <section class="view" id="vSettings" hidden>
       <div class="chat-head">
-        <button class="btn btn-ghost" type="button" id="settingsBack" aria-label="Kembali ke linimasa"><svg class="icon"><use href="#i-back"/></svg></button>
-        <div class="t"><h2>Pengaturan proyek</h2><span class="chip" id="settingsSub"></span></div>
+        <button class="btn btn-ghost" type="button" id="settingsBack" aria-label="Back to timeline"><svg class="icon"><use href="#i-back"/></svg></button>
+        <div class="t"><h2>Project settings</h2><span class="chip" id="settingsSub"></span></div>
       </div>
       <div class="settings">
         <div class="settings-inner">
           <div class="section">
-            <h3 class="h3">Link proyek</h3>
-            <p>Kirim link ini ke anggota tim. Kata sandi dikirim lewat jalur lain.</p>
+            <h3 class="h3">Project link</h3>
+            <p>Send this link to your team. Share the password through a different channel.</p>
             <div class="inline">
-              <input id="shareLink" readonly aria-label="Link proyek" class="field-like" style="border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font-family:var(--f-mono);font-size:12px">
-              <button class="btn" type="button" id="copyLink">Salin</button>
+              <input id="shareLink" readonly aria-label="Project link" class="field-like" style="border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font-family:var(--f-mono);font-size:12px">
+              <button class="btn" type="button" id="copyLink">Copy</button>
             </div>
           </div>
 
           <div class="section">
-            <h3 class="h3">Hapus update otomatis</h3>
-            <p>Update yang lebih lama dari batas ini dihapus permanen dari server.</p>
+            <h3 class="h3">Auto-delete updates</h3>
+            <p>Updates older than this are permanently deleted from the server.</p>
             <div class="inline">
-              <select id="retentionEdit" aria-label="Batas umur update" style="border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px">
-                <option value="1">1 hari</option>
-                <option value="3">3 hari</option>
-                <option value="7">7 hari</option>
-                <option value="30">30 hari</option>
+              <select id="retentionEdit" aria-label="Update age limit" style="border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px">
+                <option value="1">1 day</option>
+                <option value="3">3 days</option>
+                <option value="7">7 days</option>
+                <option value="30">30 days</option>
               </select>
-              <button class="btn" type="button" id="saveRetention">Simpan</button>
+              <button class="btn" type="button" id="saveRetention">Save</button>
             </div>
           </div>
 
           <form class="section" id="changeForm" autocomplete="off">
-            <h3 class="h3">Ganti kata sandi</h3>
-            <p>Semua update dikunci ulang dengan kata sandi baru. Anggota lain perlu kata sandi baru untuk membuka lagi.</p>
+            <h3 class="h3">Change password</h3>
+            <p>All updates are re-encrypted with the new password. Other members will need the new password to open the project again.</p>
             <div class="field">
-              <label for="newPass1">Kata sandi baru</label>
+              <label for="newPass1">New password</label>
               <input id="newPass1" type="password" maxlength="128" autocomplete="new-password" required>
-              <span class="hint" id="newPass1Hint">Minimal 10 karakter dengan huruf.</span>
+              <span class="hint" id="newPass1Hint">At least 10 characters, including letters.</span>
             </div>
             <div class="field">
-              <label for="newPass2">Ulangi kata sandi baru</label>
+              <label for="newPass2">Repeat new password</label>
               <input id="newPass2" type="password" maxlength="128" autocomplete="new-password" required>
               <span class="hint" id="newPass2Hint"></span>
             </div>
-            <button class="btn btn-primary" type="submit" id="changeBtn">Ganti kata sandi</button>
+            <button class="btn btn-primary" type="submit" id="changeBtn">Change password</button>
             <span class="hint" id="changeStatus"></span>
           </form>
 
           <div class="section danger">
-            <h3 class="h3">Hapus proyek</h3>
-            <p>Proyek dan semua update-nya dihapus permanen untuk semua anggota.</p>
-            <button class="btn btn-danger" type="button" id="delRoomBtn" style="justify-self:start">Hapus proyek</button>
+            <h3 class="h3">Delete project</h3>
+            <p>The project and all its updates are permanently deleted for every member.</p>
+            <button class="btn btn-danger" type="button" id="delRoomBtn" style="justify-self:start">Delete project</button>
           </div>
         </div>
       </div>
@@ -588,20 +588,20 @@ button { cursor: pointer; }
   </main>
 </div>
 
-<div class="emoji-pop" id="emojiPop" role="dialog" aria-label="Pilih emoji" hidden></div>
+<div class="emoji-pop" id="emojiPop" role="dialog" aria-label="Choose emoji" hidden></div>
 
-<div class="cam" id="cam" role="dialog" aria-label="Kamera" hidden>
+<div class="cam" id="cam" role="dialog" aria-label="Camera" hidden>
   <video id="camVideo" playsinline muted autoplay></video>
   <div class="cam-bar">
-    <button class="btn" type="button" id="camCancel">Batal</button>
-    <button class="shutter" type="button" id="camShot" aria-label="Ambil foto"></button>
-    <button class="btn" type="button" id="camFlip">Ganti kamera</button>
+    <button class="btn" type="button" id="camCancel">Cancel</button>
+    <button class="shutter" type="button" id="camShot" aria-label="Take photo"></button>
+    <button class="btn" type="button" id="camFlip">Switch camera</button>
   </div>
 </div>
 
-<div class="lightbox" id="lightbox" role="dialog" aria-label="Foto" hidden>
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Photo" hidden>
   <canvas id="lbCanvas"></canvas>
-  <button class="btn" type="button" id="lbClose">Tutup</button>
+  <button class="btn" type="button" id="lbClose">Close</button>
 </div>
 
 <script>
@@ -694,14 +694,14 @@ button { cursor: pointer; }
   function applySound() {
     const b = $("soundBtn");
     b.setAttribute("aria-pressed", SOUND ? "true" : "false");
-    const label = SOUND ? "Suara notifikasi aktif" : "Suara notifikasi mati";
+    const label = SOUND ? "Sound notifications on" : "Sound notifications off";
     b.setAttribute("aria-label", label); b.title = label;
     $("soundIcon").setAttribute("href", SOUND ? "#i-bell" : "#i-bell-off");
   }
   $("soundBtn").addEventListener("click", () => {
     SOUND = !SOUND; store.set("pu-sound", SOUND ? "1" : "0"); applySound();
-    if (SOUND) { ensureAudio(); setTimeout(chime, 50); toast("Suara notifikasi aktif di perangkat ini."); }
-    else { stopWatch(); toast("Suara notifikasi dimatikan."); }
+    if (SOUND) { ensureAudio(); setTimeout(chime, 50); toast("Sound notifications are on for this device."); }
+    else { stopWatch(); toast("Sound notifications are off."); }
     bumpIdle();
   });
   // Browsers only allow sound after the person has interacted with the page.
@@ -770,13 +770,13 @@ button { cursor: pointer; }
     for (const v of ["vWelcome", "vAdmin", "vCreate", "vLock", "vChat", "vSettings"]) $(v).hidden = v !== view;
     $("app").classList.toggle("show-main", view !== "vWelcome");
   }
-  const fmtTime = (s) => new Date(s).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-  const fmtDate = (s) => new Date(s).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+  const fmtTime = (s) => new Date(s).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  const fmtDate = (s) => new Date(s).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   function fmtDay(s) {
     const d = new Date(s), today = new Date(), y = new Date(); y.setDate(today.getDate() - 1);
-    if (d.toDateString() === today.toDateString()) return "Hari ini";
-    if (d.toDateString() === y.toDateString()) return "Kemarin";
-    return d.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
+    if (d.toDateString() === today.toDateString()) return "Today";
+    if (d.toDateString() === y.toDateString()) return "Yesterday";
+    return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
   }
   function armButton(btn, label, onConfirm) {
     if (btn.classList.contains("armed")) { btn.classList.remove("armed"); clearTimeout(btn._t); btn.textContent = btn._orig; onConfirm(); return; }
@@ -787,12 +787,12 @@ button { cursor: pointer; }
   function setName(n) { S.myName = n.trim().slice(0, 40); store.set("pu-name", S.myName); }
 
   function passCheck(p) {
-    if (!p) return ["Minimal 10 karakter dengan huruf. Gabungan 3–4 kata acak paling kuat.", ""];
-    if (p.length < 10) return ["Minimal 10 karakter.", "bad"];
-    if (!/\p{L}/u.test(p)) return ["Pakai huruf juga, jangan cuma angka.", "bad"];
-    if (/^(.)\1+$/.test(p)) return ["Terlalu mudah ditebak.", "bad"];
-    if (p.length < 14) return ["Bisa dipakai. Lebih panjang lebih kuat.", ""];
-    return ["Kata sandi kuat.", "ok"];
+    if (!p) return ["At least 10 characters, including letters. 3–4 random words are strongest.", ""];
+    if (p.length < 10) return ["At least 10 characters.", "bad"];
+    if (!/\p{L}/u.test(p)) return ["Include letters, not just numbers.", "bad"];
+    if (/^(.)\1+$/.test(p)) return ["Too easy to guess.", "bad"];
+    if (p.length < 14) return ["Usable. Longer is stronger.", ""];
+    return ["Strong password.", "ok"];
   }
   function wirePassHints(a, b, ha, hb) {
     const up = () => {
@@ -800,8 +800,8 @@ button { cursor: pointer; }
       $(ha).textContent = m; $(ha).className = "hint " + c;
       const v2 = $(b).value;
       if (!v2) { $(hb).textContent = ""; $(hb).className = "hint"; }
-      else if (v2 !== $(a).value) { $(hb).textContent = "Belum sama."; $(hb).className = "hint bad"; }
-      else { $(hb).textContent = "Cocok."; $(hb).className = "hint ok"; }
+      else if (v2 !== $(a).value) { $(hb).textContent = "Doesn't match yet."; $(hb).className = "hint bad"; }
+      else { $(hb).textContent = "Matches."; $(hb).className = "hint ok"; }
     };
     $(a).addEventListener("input", up); $(b).addEventListener("input", up);
     return up;
@@ -813,11 +813,11 @@ button { cursor: pointer; }
   async function loadProjects() {
     try {
       S.projects = await rpc("pu_list_projects");
-      S.loaded = true; setSync("Tersinkron");
-    } catch { setSync("Offline. Mencoba lagi…"); }
+      S.loaded = true; setSync("Synced");
+    } catch { setSync("Offline. Retrying…"); }
     renderProjects();
     if (S.current && S.loaded && !S.projects.some((p) => p.id === S.current)) {
-      forget(S.current); closeProject(); toast("Proyek ini sudah dihapus.");
+      forget(S.current); closeProject(); toast("This project has been deleted.");
     }
   }
   function renderProjects() {
@@ -832,17 +832,17 @@ button { cursor: pointer; }
       else g.innerHTML = '<svg class="icon"><use href="#i-lock"/></svg>';
       const t = document.createElement("span"); t.style.minWidth = "0";
       const n = document.createElement("div"); n.className = "room-name";
-      n.textContent = o ? o.name : (p.name || "Proyek tanpa nama");
+      n.textContent = o ? o.name : (p.name || "Untitled project");
       const s = document.createElement("div"); s.className = "room-sub";
-      if (!o && S.watchNew.has(p.id)) { s.classList.add("new"); s.textContent = "Terkunci · ada update baru"; }
-      else s.textContent = (o ? "Terbuka" : "Terkunci") + " · Dibuat " + fmtDate(p.created_at);
+      if (!o && S.watchNew.has(p.id)) { s.classList.add("new"); s.textContent = "Locked · new updates"; }
+      else s.textContent = (o ? "Open" : "Locked") + " · Created " + fmtDate(p.created_at);
       t.append(n, s); b.append(g, t);
       b.addEventListener("click", () => selectProject(p.id));
       li.append(b); ul.append(li);
     }
     const e = $("sideEmpty");
-    if (!S.loaded) { e.hidden = false; e.textContent = "Memuat proyek…"; }
-    else if (!S.projects.length) { e.hidden = false; e.textContent = ADMIN ? "Belum ada proyek. Buat proyek pertama untuk mulai mencatat progres." : "Belum ada proyek."; }
+    if (!S.loaded) { e.hidden = false; e.textContent = "Loading projects…"; }
+    else if (!S.projects.length) { e.hidden = false; e.textContent = ADMIN ? "No projects yet. Create the first one to start tracking progress." : "No projects yet."; }
     else e.hidden = true;
   }
 
@@ -868,11 +868,11 @@ button { cursor: pointer; }
   $("createForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = $("roomName").value.trim(), p1 = $("pass1").value, p2 = $("pass2").value;
-    if (!name) return toast("Isi nama proyek.");
-    if (passCheck(p1)[1] === "bad") return toast("Periksa lagi kata sandinya.");
-    if (p1 !== p2) return toast("Kata sandi dan ulangannya belum sama.");
+    if (!name) return toast("Enter a project name.");
+    if (passCheck(p1)[1] === "bad") return toast("Check the password again.");
+    if (p1 !== p2) return toast("The passwords don't match.");
     setName($("createName").value);
-    const btn = $("createSubmit"); btn.disabled = true; btn.lastElementChild.textContent = "Menyiapkan…";
+    const btn = $("createSubmit"); btn.disabled = true; btn.lastElementChild.textContent = "Setting up…";
     try {
       const id = crypto.randomUUID();
       const salt = b64(crypto.getRandomValues(new Uint8Array(16)));
@@ -885,17 +885,17 @@ button { cursor: pointer; }
       });
       if (!r.ok && r.error === "forbidden") {
         forgetAdmin(); show("vWelcome");
-        toast("Kode pembuat di perangkat ini tidak berlaku lagi."); return;
+        toast("The creator code on this device is no longer valid."); return;
       }
       if (!r.ok) throw new Error(r.error);
       S.open.set(id, { key, auth, name, retention });
       $("createForm").reset();
       await loadProjects();
       selectProject(id);
-      toast("Proyek dibuat. Bagikan link dan kata sandi ke tim.");
+      toast("Project created. Share the link and password with your team.");
     } catch (err) {
-      toast(String(err.message) === "full" ? "Batas jumlah proyek tercapai. Hapus proyek lama dulu." : "Gagal membuat proyek. Periksa koneksi lalu coba lagi.");
-    } finally { btn.disabled = false; btn.lastElementChild.textContent = "Buat proyek"; }
+      toast(String(err.message) === "full" ? "Project limit reached. Delete an old project first." : "Couldn't create the project. Check your connection and try again.");
+    } finally { btn.disabled = false; btn.lastElementChild.textContent = "Create project"; }
   });
 
   /* ---------- creator setup ---------- */
@@ -903,9 +903,9 @@ button { cursor: pointer; }
     $("adminForm").reset();
     $("adminForget").hidden = !ADMIN;
     $("adminLede").textContent = ADMIN
-      ? "Perangkat ini sudah bisa membuat proyek. Masukkan kode lain untuk menggantinya."
-      : "Masukkan kode pembuat untuk mengaktifkan tombol Proyek baru di perangkat ini.";
-    $("adminHint").textContent = "Kode disimpan hanya di browser ini."; $("adminHint").className = "hint";
+      ? "This device can already create projects. Enter a different code to replace it."
+      : "Enter the creator code to enable the New project button on this device.";
+    $("adminHint").textContent = "The code is stored only in this browser."; $("adminHint").className = "hint";
     show("vAdmin");
   }
   function leaveAdmin() { try { history.replaceState(null, "", location.pathname + location.search); } catch {} show("vWelcome"); }
@@ -916,19 +916,19 @@ button { cursor: pointer; }
     try {
       if (await rpc("pu_check_admin", { p_admin: code })) {
         ADMIN = code; store.set("pu-admin", code); applyAdmin(); renderProjects();
-        leaveAdmin(); toast("Perangkat ini sekarang bisa membuat proyek.");
-      } else { $("adminHint").textContent = "Kode salah."; $("adminHint").className = "hint bad"; }
-    } catch { $("adminHint").textContent = "Tidak bisa terhubung. Coba lagi."; $("adminHint").className = "hint bad"; }
+        leaveAdmin(); toast("This device can now create projects.");
+      } else { $("adminHint").textContent = "Wrong code."; $("adminHint").className = "hint bad"; }
+    } catch { $("adminHint").textContent = "Couldn't connect. Try again."; $("adminHint").className = "hint bad"; }
     finally { $("adminSave").disabled = false; }
   });
   window.addEventListener("hashchange", () => { if (location.hash === "#kelola") showAdmin(); });
-  $("adminForget").addEventListener("click",() => { forgetAdmin(); leaveAdmin(); toast("Kode pembuat dihapus dari perangkat ini."); });
+  $("adminForget").addEventListener("click",() => { forgetAdmin(); leaveAdmin(); toast("Creator code removed from this device."); });
 
   /* ---------- unlock ---------- */
   function showLock(msg, bad) {
     const p = S.projects.find((x) => x.id === S.current);
-    $("lockTitle").textContent = (p && p.name) || "Proyek tanpa nama";
-    $("lockSub").textContent = p ? "Terkunci · Dibuat " + fmtDate(p.created_at) : "Terkunci";
+    $("lockTitle").textContent = (p && p.name) || "Untitled project";
+    $("lockSub").textContent = p ? "Locked · Created " + fmtDate(p.created_at) : "Locked";
     $("unlockForm").reset(); $("unlockName").value = S.myName;
     setLockMsg(msg || "", bad);
     show("vLock");
@@ -937,11 +937,11 @@ button { cursor: pointer; }
   function setLockMsg(t, bad) { const m = $("lockMsg"); m.textContent = t; m.className = "lock-msg" + (bad ? " bad" : ""); }
   function errText(code, lockedUntil) {
     switch (code) {
-      case "bad": return "Kata sandi salah.";
-      case "locked": return "Terlalu banyak percobaan salah. Coba lagi" + (lockedUntil ? " setelah pukul " + new Date(lockedUntil).toLocaleTimeString("id-ID") : " nanti") + ".";
-      case "changed": return "Kata sandi proyek ini sudah diganti. Minta kata sandi baru ke tim.";
-      case "missing": return "Proyek ini sudah dihapus.";
-      default: return "Terjadi kesalahan. Coba lagi.";
+      case "bad": return "Wrong password.";
+      case "locked": return "Too many wrong attempts. Try again" + (lockedUntil ? " after " + new Date(lockedUntil).toLocaleTimeString("en-GB") : " later") + ".";
+      case "changed": return "This project's password was changed. Ask your team for the new one.";
+      case "missing": return "This project has been deleted.";
+      default: return "Something went wrong. Try again.";
     }
   }
 
@@ -950,7 +950,7 @@ button { cursor: pointer; }
     const id = S.current, pass = $("unlockPass").value;
     if (!id || !pass) return;
     setName($("unlockName").value);
-    const btn = $("unlockBtn"); btn.disabled = true; setLockMsg("Memeriksa kata sandi…");
+    const btn = $("unlockBtn"); btn.disabled = true; setLockMsg("Checking password…");
     try {
       const meta = await rpc("pu_project_meta", { p_id: id });
       if (!meta) { setLockMsg(errText("missing"), true); loadProjects(); return; }
@@ -971,12 +971,12 @@ button { cursor: pointer; }
       if (p && !p.name) { p.name = name; rpc("pu_set_name", { p_id: id, p_auth: auth, p_name: name }).catch(() => {}); }
       renderProjects(); showTimeline();
     } catch {
-      setLockMsg("Tidak bisa terhubung. Periksa koneksi lalu coba lagi.", true);
+      setLockMsg("Couldn't connect. Check your connection and try again.", true);
     } finally { btn.disabled = false; }
   });
 
   /* ---------- timeline ---------- */
-  function retentionLabel(d) { return "Update terhapus otomatis setelah " + d + " hari"; }
+  function retentionLabel(d) { return "Updates auto-delete after " + d + (d === 1 ? " day" : " days"); }
   function showTimeline() {
     const o = S.open.get(S.current); if (!o) return showLock();
     $("chatTitle").textContent = o.name;
@@ -1003,9 +1003,9 @@ button { cursor: pointer; }
         if (S.current === id && S.open.get(id) === o) {
           if (!r.ok) { handleAuthLoss(id, r.error); S.polling = false; return; }
           await ingest(id, o, r);
-          setSync("Tersinkron " + fmtTime(Date.now()));
+          setSync("Synced " + fmtTime(Date.now()));
         }
-      } catch { setSync("Offline. Mencoba lagi…"); }
+      } catch { setSync("Offline. Retrying…"); }
       S.polling = false;
     }
     if (S.current === id && S.open.has(id)) S.pollT = setTimeout(poll, document.hidden ? 15000 : POLL_MS);
@@ -1060,8 +1060,8 @@ button { cursor: pointer; }
     const list = [...S.updates.values()].sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
     if (!list.length) {
       const e = document.createElement("div"); e.className = "empty-chat";
-      const s = document.createElement("strong"); s.textContent = "Belum ada update.";
-      const p = document.createElement("span"); p.textContent = "Tulis update progres pertama untuk proyek ini di kolom bawah.";
+      const s = document.createElement("strong"); s.textContent = "No updates yet.";
+      const p = document.createElement("span"); p.textContent = "Write the first progress update for this project below.";
       e.append(s, p); box.append(e); return;
     }
     // Aggregate reactions per update: emoji -> { count, mine, names }
@@ -1074,7 +1074,7 @@ button { cursor: pointer; }
         if (typeof em !== "string" || em.length > 16) continue;
         const a = agg.get(em) || { count: 0, mine: false, names: [] };
         a.count++; if (mine) a.mine = true;
-        a.names.push(mine ? "Kamu" : (x.plain.n || "Anggota tim"));
+        a.names.push(mine ? "You" : (x.plain.n || "Team member"));
         agg.set(em, a);
       }
     }
@@ -1091,15 +1091,15 @@ button { cursor: pointer; }
       const tm = document.createElement("span"); tm.className = "time"; tm.textContent = fmtTime(u.created_at);
       head.append(who, tm);
       if (u.edited_at) {
-        const ed = document.createElement("span"); ed.className = "edited"; ed.textContent = "diedit";
-        ed.title = "Diedit " + fmtDay(u.edited_at).toLowerCase() + " " + fmtTime(u.edited_at);
+        const ed = document.createElement("span"); ed.className = "edited"; ed.textContent = "edited";
+        ed.title = "Edited " + fmtDay(u.edited_at).toLowerCase() + " " + fmtTime(u.edited_at);
         head.append(ed);
       }
       const acts = document.createElement("span"); acts.className = "actions";
       if (u.plain) {
-        const rp = iconButton("i-reply", "Balas");
+        const rp = iconButton("i-reply", "Reply");
         rp.addEventListener("click", () => startReply(u.id));
-        const rb = iconButton("i-react", "Beri reaksi");
+        const rb = iconButton("i-react", "React");
         rb.addEventListener("click", () => openPicker(rb, QUICK, (em) => toggleReaction(u.id, em)));
         acts.append(rp, rb);
       }
@@ -1109,13 +1109,13 @@ button { cursor: pointer; }
         acts.append(ed);
       }
       if (mine) {
-        const del = iconButton("i-trash", "Hapus update"); del.classList.add("act-del");
+        const del = iconButton("i-trash", "Delete update"); del.classList.add("act-del");
         del.addEventListener("click", () => armIcon(del, () => deleteUpdate(u.id)));
         acts.append(del);
       }
       if (acts.childElementCount) head.append(acts);
       const b = document.createElement("div"); b.className = "bubble";
-      if (!u.plain) { b.classList.add("sealed"); b.textContent = "Update ini tidak bisa dibuka dengan kata sandi sekarang."; }
+      if (!u.plain) { b.classList.add("sealed"); b.textContent = "This update can't be opened with the current password."; }
       else b.textContent = u.plain.t;
       wrap.append(head);
       const replyTo = u.plain && typeof u.plain.r === "string" ? u.plain.r : null;
@@ -1126,11 +1126,11 @@ button { cursor: pointer; }
         const qt = document.createElement("span"); qt.className = "qt";
         if (target) {
           qn.textContent = authorName(target); qt.textContent = snippet(target);
-          q.setAttribute("aria-label", "Lihat update yang dibalas dari " + authorName(target));
+          q.setAttribute("aria-label", "View the original update from " + authorName(target));
           q.addEventListener("click", () => jumpTo(replyTo));
         } else {
           q.classList.add("gone"); q.disabled = true;
-          qn.textContent = "Update asli"; qt.textContent = "Sudah dihapus atau kedaluwarsa.";
+          qn.textContent = "Original update"; qt.textContent = "Deleted or expired.";
         }
         q.append(qn, qt); wrap.append(q);
       }
@@ -1150,7 +1150,7 @@ button { cursor: pointer; }
           const n1 = document.createElement("span"); n1.textContent = a.count;
           c.append(e1, n1);
           c.title = a.names.join(", ");
-          c.setAttribute("aria-label", em + " " + a.count + ": " + a.names.join(", ") + (a.mine ? ". Klik untuk batal." : ". Klik untuk ikut."));
+          c.setAttribute("aria-label", em + " " + a.count + ": " + a.names.join(", ") + (a.mine ? ". Click to remove yours." : ". Click to add yours."));
           c.setAttribute("aria-pressed", a.mine ? "true" : "false");
           c.addEventListener("click", () => toggleReaction(u.id, em));
           rs.append(c);
@@ -1163,12 +1163,12 @@ button { cursor: pointer; }
   }
 
   /* ---------- replies (the link to the original lives inside the encrypted payload) ---------- */
-  function authorName(u) { return u.author === DEVICE_HASH ? "Kamu" : ((u.plain && u.plain.n) || "Anggota tim"); }
+  function authorName(u) { return u.author === DEVICE_HASH ? "You" : ((u.plain && u.plain.n) || "Team member"); }
   function snippet(u) {
-    if (!u.plain) return "Tidak bisa dibuka.";
+    if (!u.plain) return "Can't be opened.";
     const photo = Array.isArray(u.plain.f) && u.plain.f.length ? "📷 " : "";
     const t = (u.plain.t || "").replace(/\s+/g, " ").trim();
-    if (!t) return photo ? "📷 Foto" : "";
+    if (!t) return photo ? "📷 Photo" : "";
     return photo + (t.length > 140 ? t.slice(0, 140) + "…" : t);
   }
   function jumpTo(uid) {
@@ -1179,7 +1179,7 @@ button { cursor: pointer; }
   function startReply(uid) {
     const u = S.updates.get(uid); if (!u || !u.plain) return;
     S.replyTo = uid;
-    $("replyName").textContent = "Membalas " + authorName(u);
+    $("replyName").textContent = "Replying to " + authorName(u);
     $("replyText").textContent = snippet(u);
     $("replyBar").hidden = false;
     input.focus();
@@ -1257,7 +1257,7 @@ button { cursor: pointer; }
     const st = S.files.get(f.id);
     if (st && st.state === "ready") {
       const c = document.createElement("canvas"); c.className = "photo"; c.tabIndex = 0;
-      c.setAttribute("role", "img"); c.setAttribute("aria-label", "Foto. Klik untuk memperbesar.");
+      c.setAttribute("role", "img"); c.setAttribute("aria-label", "Photo. Click to enlarge.");
       drawPhoto(c, st.bmp, w, h);
       c.addEventListener("click", () => openLightbox(st.bmp));
       c.addEventListener("keydown", (e) => { if (e.key === "Enter") openLightbox(st.bmp); });
@@ -1265,7 +1265,7 @@ button { cursor: pointer; }
     }
     const ph = document.createElement("div"); ph.className = "photo photo-ph";
     ph.style.width = w + "px"; ph.style.height = h + "px";
-    ph.textContent = st && st.state === "error" ? "Foto tidak bisa dimuat." : "Memuat foto…";
+    ph.textContent = st && st.state === "error" ? "Couldn't load photo." : "Loading photo…";
     if (!st) loadFile(f);
     return ph;
   }
@@ -1286,7 +1286,7 @@ button { cursor: pointer; }
     S.pending = p;
     const h = 56, w = Math.min(120, Math.round(h * p.w / p.h));
     drawPhoto($("attachPreview"), p.bitmap, w, h);
-    $("attachInfo").textContent = "Foto siap dikirim · " + Math.max(1, Math.round(p.blob.size / 1024)) + " KB";
+    $("attachInfo").textContent = "Photo ready to send · " + Math.max(1, Math.round(p.blob.size / 1024)) + " KB";
     $("attachBar").hidden = false;
   }
   function clearPending(closeBmp = true) {
@@ -1300,7 +1300,7 @@ button { cursor: pointer; }
     closePicker();
     try {
       camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: camFacing, width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false });
-    } catch { return toast("Kamera tidak bisa dipakai. Izinkan akses kamera untuk situs ini di pengaturan browser."); }
+    } catch { return toast("Can't use the camera. Allow camera access for this site in your browser settings."); }
     const v = $("camVideo"); v.srcObject = camStream; v.classList.toggle("mirror", camFacing === "user");
     $("cam").hidden = false;
     try { await v.play(); } catch {}
@@ -1318,19 +1318,19 @@ button { cursor: pointer; }
     const cv = document.createElement("canvas"); cv.width = v.videoWidth; cv.height = v.videoHeight;
     cv.getContext("2d").drawImage(v, 0, 0);
     closeCamera();
-    try { setPending(await prepareImage(cv)); } catch { toast("Gagal mengambil foto."); }
+    try { setPending(await prepareImage(cv)); } catch { toast("Couldn't take the photo."); }
   });
   $("fileInput").addEventListener("change", async (e) => {
     const file = e.target.files && e.target.files[0]; e.target.value = "";
     if (!file) return;
-    if (!file.type.startsWith("image/")) return toast("Pilih file gambar.");
-    try { setPending(await prepareImage(file)); } catch { toast("Foto ini tidak bisa dibuka."); }
+    if (!file.type.startsWith("image/")) return toast("Choose an image file.");
+    try { setPending(await prepareImage(file)); } catch { toast("This photo can't be opened."); }
   });
   $("attachBtn").addEventListener("click", (e) => {
     if (!$("emojiPop").hidden) return closePicker();
     const items = [];
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) items.push(["📷  Ambil foto", openCamera]);
-    items.push(["🖼️  Pilih foto", () => $("fileInput").click()]);
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) items.push(["📷  Take photo", openCamera]);
+    items.push(["🖼️  Choose photo", () => $("fileInput").click()]);
     openMenu(e.currentTarget, items);
   });
   // Drop decoded photos, the camera and any pending photo when a project closes or switches.
@@ -1356,7 +1356,7 @@ button { cursor: pointer; }
       const r = await rpc("pu_react", { p_id: id, p_auth: o.auth, p_update: uid, p_device: DEVICE, p_iv: iv, p_ct: ct });
       if (!r.ok) {
         if (["bad", "changed", "missing", "locked"].includes(r.error)) return handleAuthLoss(id, r.error);
-        return toast(r.error === "gone" ? "Update ini sudah dihapus." : "Reaksi gagal disimpan.");
+        return toast(r.error === "gone" ? "This update has been deleted." : "Couldn't save the reaction.");
       }
       if (S.current !== id) return;
       if (mineRow) S.reactions.delete(mineRow.id);
@@ -1365,7 +1365,7 @@ button { cursor: pointer; }
         S.reactions.set(x.id, { id: x.id, update_id: x.update_id, author: x.author, updated_at: x.updated_at, plain: { e, n: S.myName } });
       }
       renderUpdates();
-    } catch { toast("Reaksi gagal disimpan. Periksa koneksi."); }
+    } catch { toast("Couldn't save the reaction. Check your connection."); }
     finally { reacting = false; }
   }
 
@@ -1375,12 +1375,12 @@ button { cursor: pointer; }
     b.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#' + icon + '"/></svg>';
     return b;
   }
-  // First click arms (turns red, asks "Hapus?"), second click within 3.5 s confirms.
+  // First click arms (turns red, asks "Delete?"), second click within 3.5 s confirms.
   function armIcon(btn, onConfirm) {
     if (btn.classList.contains("armed")) { clearTimeout(btn._t); onConfirm(); return; }
-    const label = document.createElement("span"); label.textContent = "Hapus?";
-    btn.append(label); btn.classList.add("armed"); btn.setAttribute("aria-label", "Klik lagi untuk menghapus");
-    btn._t = setTimeout(() => { btn.classList.remove("armed"); label.remove(); btn.setAttribute("aria-label", "Hapus update"); }, 3500);
+    const label = document.createElement("span"); label.textContent = "Delete?";
+    btn.append(label); btn.classList.add("armed"); btn.setAttribute("aria-label", "Click again to delete");
+    btn._t = setTimeout(() => { btn.classList.remove("armed"); label.remove(); btn.setAttribute("aria-label", "Delete update"); }, 3500);
   }
 
   function startEdit(uid, wrap) {
@@ -1392,10 +1392,10 @@ button { cursor: pointer; }
     const ta = document.createElement("textarea"); ta.maxLength = 2000; ta.value = u.plain.t || "";
     ta.id = "edit-" + uid; ta.setAttribute("aria-label", "Edit update");
     const row = document.createElement("div"); row.className = "row";
-    const save = document.createElement("button"); save.type = "submit"; save.className = "btn btn-primary"; save.textContent = "Simpan";
-    const cancel = document.createElement("button"); cancel.type = "button"; cancel.className = "btn"; cancel.textContent = "Batal";
+    const save = document.createElement("button"); save.type = "submit"; save.className = "btn btn-primary"; save.textContent = "Save";
+    const cancel = document.createElement("button"); cancel.type = "button"; cancel.className = "btn"; cancel.textContent = "Cancel";
     const hint = document.createElement("span"); hint.className = "hint";
-    hint.textContent = finePointer ? "Enter untuk simpan, Esc untuk batal" : "";
+    hint.textContent = finePointer ? "Enter to save, Esc to cancel" : "";
     row.append(save, cancel, hint); ed.append(ta, row); wrap.append(ed);
     ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
     const finish = () => { S.editing = null; renderUpdates(); };
@@ -1408,24 +1408,24 @@ button { cursor: pointer; }
       e.preventDefault();
       const text = ta.value.trim();
       const hasPhoto = Array.isArray(u.plain.f) && u.plain.f.length > 0;
-      if (!text && !hasPhoto) { hint.textContent = "Update tidak boleh kosong. Pakai hapus untuk menghapusnya."; hint.className = "hint bad"; return; }
+      if (!text && !hasPhoto) { hint.textContent = "An update can't be empty. Use delete to remove it."; hint.className = "hint bad"; return; }
       if (text === u.plain.t) return finish();
       const id = S.current, o = S.open.get(id); if (!o) return finish();
-      save.disabled = true; cancel.disabled = true; hint.className = "hint"; hint.textContent = "Menyimpan…";
+      save.disabled = true; cancel.disabled = true; hint.className = "hint"; hint.textContent = "Saving…";
       try {
         const next = { t: text, n: S.myName }; if (u.plain.r) next.r = u.plain.r; if (hasPhoto) next.f = u.plain.f;
         const sealed = await seal(o.key, next, id);
         const r = await rpc("pu_edit_update", { p_id: id, p_auth: o.auth, p_update: uid, p_device: DEVICE, p_iv: sealed.iv, p_ct: sealed.ct });
         if (!r.ok) {
           if (["bad", "changed", "missing", "locked"].includes(r.error)) { S.editing = null; handleAuthLoss(id, r.error); return; }
-          hint.textContent = r.error === "not_yours" ? "Update ini sudah dihapus atau bukan milikmu." : "Gagal menyimpan.";
+          hint.textContent = r.error === "not_yours" ? "This update was deleted or isn't yours." : "Couldn't save.";
           hint.className = "hint bad"; save.disabled = false; cancel.disabled = false; return;
         }
         const cur = S.updates.get(uid);
         if (cur) { cur.plain = next; cur.edited_at = r.edited_at; }
         finish();
       } catch {
-        hint.textContent = "Gagal menyimpan. Periksa koneksi."; hint.className = "hint bad";
+        hint.textContent = "Couldn't save. Check your connection."; hint.className = "hint bad";
         save.disabled = false; cancel.disabled = false;
       }
     });
@@ -1437,8 +1437,8 @@ button { cursor: pointer; }
       const r = await rpc("pu_delete_update", { p_id: id, p_auth: o.auth, p_update: uid, p_device: DEVICE });
       if (r.ok) { S.updates.delete(uid); renderUpdates(); }
       else if (r.error) handleAuthLoss(id, r.error);
-      else toast("Update gagal dihapus.");
-    } catch { toast("Update gagal dihapus. Periksa koneksi."); }
+      else toast("Couldn't delete the update.");
+    } catch { toast("Couldn't delete the update. Check your connection."); }
   }
 
   /* ---------- emoji picker (shared by the composer and reactions) ---------- */
@@ -1519,7 +1519,7 @@ button { cursor: pointer; }
       const payload = { t: text, n: S.myName }; if (replyTo) payload.r = replyTo;
       let sealedPhoto = null;
       if (photo) {
-        $("attachInfo").textContent = "Mengenkripsi foto…";
+        $("attachInfo").textContent = "Encrypting photo…";
         sealedPhoto = await sealPhoto(photo);
         payload.f = [sealedPhoto.meta];
       }
@@ -1527,21 +1527,21 @@ button { cursor: pointer; }
       const r = await rpc("pu_post", { p_id: id, p_auth: o.auth, p_iv: box.iv, p_ct: box.ct, p_device: DEVICE });
       if (!r.ok) {
         input.value = text; autoGrow(); if (photo) setPending(photo);
-        if (r.error === "full") toast("Proyek ini sudah penuh. Hapus update lama dulu.");
+        if (r.error === "full") toast("This project is full. Delete old updates first.");
         else if (["bad", "changed", "missing", "locked"].includes(r.error)) handleAuthLoss(id, r.error);
-        else toast("Update gagal diposting.");
+        else toast("Couldn't post the update.");
         return;
       }
       const u = r.update;
       if (sealedPhoto) {
-        $("attachInfo").textContent = "Mengunggah foto…";
+        $("attachInfo").textContent = "Uploading photo…";
         const up = await rpc("pu_put_file", { p_id: id, p_auth: o.auth, p_update: u.id, p_file: sealedPhoto.meta.id, p_device: DEVICE, p_iv: sealedPhoto.iv, p_ct: sealedPhoto.ct })
           .catch(() => ({ ok: false }));
         if (!up.ok) {
           // Don't leave a post pointing at a missing photo.
           await rpc("pu_delete_update", { p_id: id, p_auth: o.auth, p_update: u.id, p_device: DEVICE }).catch(() => {});
           input.value = text; autoGrow(); setPending(photo);
-          toast("Foto gagal diunggah. Coba lagi."); return;
+          toast("Photo upload failed. Try again."); return;
         }
         S.files.set(sealedPhoto.meta.id, { state: "ready", bmp: photo.bitmap });
       }
@@ -1551,7 +1551,7 @@ button { cursor: pointer; }
         if (S.replyTo === replyTo) clearReply();
         renderUpdates(true);
       }
-    } catch { input.value = text; autoGrow(); if (photo) setPending(photo); toast("Update gagal diposting. Periksa koneksi."); }
+    } catch { input.value = text; autoGrow(); if (photo) setPending(photo); toast("Couldn't post the update. Check your connection."); }
     finally { $("sendBtn").disabled = false; }
   });
 
@@ -1632,7 +1632,7 @@ button { cursor: pointer; }
     if (pid !== C.pid || !box || !box.iv) return;
     let m; try { m = await unseal(C.key, box.iv, box.ct, pid + ":call"); } catch { return; }
     if (!m || typeof m.from !== "string" || m.from === C.me || (m.to && m.to !== C.me)) return;
-    const name = typeof m.name === "string" && m.name.trim() ? m.name.trim().slice(0, 40) : "Anggota tim";
+    const name = typeof m.name === "string" && m.name.trim() ? m.name.trim().slice(0, 40) : "Team member";
     switch (m.type) {
       case "hb":
       case "join": {
@@ -1653,7 +1653,7 @@ button { cursor: pointer; }
       case "answer": {
         const p = C.peers.get(m.from);
         if (p && p.pc.signalingState === "have-local-offer" && typeof m.sdp === "string")
-          p.pc.setRemoteDescription({ type: "answer", sdp: m.sdp }).catch(() => { p.state = "gagal tersambung"; });
+          p.pc.setRemoteDescription({ type: "answer", sdp: m.sdp }).catch(() => { p.state = "couldn't connect"; });
         break;
       }
       case "leave":
@@ -1669,7 +1669,7 @@ button { cursor: pointer; }
     for (const t of C.stream.getTracks()) pc.addTrack(t, C.stream);
     const audio = document.createElement("audio"); audio.autoplay = true; audio.setAttribute("playsinline", ""); audio.hidden = true;
     document.body.append(audio);
-    const p = { pc, name, audio, state: "menghubungkan…" };
+    const p = { pc, name, audio, state: "connecting…" };
     pc.ontrack = (e) => {
       audio.srcObject = e.streams[0]; audio.play().catch(() => {});
       if (p.meter) p.meter.stop();
@@ -1677,9 +1677,9 @@ button { cursor: pointer; }
     };
     pc.onconnectionstatechange = () => {
       const s = pc.connectionState;
-      if (s === "connected") p.state = "tersambung";
-      else if (s === "failed") p.state = "gagal tersambung";
-      else if (s === "disconnected") p.state = "terputus…";
+      if (s === "connected") p.state = "connected";
+      else if (s === "failed") p.state = "couldn't connect";
+      else if (s === "disconnected") p.state = "reconnecting…";
       renderCallBar();
     };
     C.peers.set(peerId, p);
@@ -1700,7 +1700,7 @@ button { cursor: pointer; }
       await p.pc.setLocalDescription(await p.pc.createOffer());
       await waitIce(p.pc);
       if (C.peers.get(peerId) === p) sig({ type: "offer", to: peerId, name: S.myName, sdp: p.pc.localDescription.sdp });
-    } catch { p.state = "gagal tersambung"; renderCallBar(); }
+    } catch { p.state = "couldn't connect"; renderCallBar(); }
   }
   async function acceptOffer(peerId, name, sdp) {
     const p = newPeer(peerId, name);
@@ -1709,7 +1709,7 @@ button { cursor: pointer; }
       await p.pc.setLocalDescription(await p.pc.createAnswer());
       await waitIce(p.pc);
       if (C.peers.get(peerId) === p) sig({ type: "answer", to: peerId, name: S.myName, sdp: p.pc.localDescription.sdp });
-    } catch { p.state = "gagal tersambung"; renderCallBar(); }
+    } catch { p.state = "couldn't connect"; renderCallBar(); }
   }
   function dropPeer(peerId) {
     const p = C.peers.get(peerId); if (!p) return;
@@ -1721,13 +1721,13 @@ button { cursor: pointer; }
 
   async function joinCall() {
     if (C.inCall || !C.rt) return;
-    if (!C.online) return toast("Layanan telepon belum tersambung. Coba lagi sebentar.");
-    if (C.remote.size >= MAX_CALL) return toast("Telepon penuh (maksimal " + MAX_CALL + " orang).");
+    if (!C.online) return toast("The call service isn't connected yet. Try again in a moment.");
+    if (C.remote.size >= MAX_CALL) return toast("The call is full (max " + MAX_CALL + " people).");
     ensureAudio(); stopRing();
     try {
       C.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
     } catch {
-      return toast("Mikrofon tidak bisa dipakai. Izinkan akses mikrofon untuk situs ini di pengaturan browser.");
+      return toast("Can't use the microphone. Allow microphone access for this site in your browser settings.");
     }
     if (!C.rt) { for (const t of C.stream.getTracks()) t.stop(); C.stream = null; return; }
     C.inCall = true; C.muted = false; C.startedAt = Date.now(); C.declined = false;
@@ -1753,7 +1753,7 @@ button { cursor: pointer; }
   function startRing() {
     if (C.ringing) return;
     C.ringing = true; C.ringStop = Date.now() + 30000;
-    if (document.hidden) document.title = "📞 Panggilan masuk · " + BASE_TITLE;
+    if (document.hidden) document.title = "📞 Incoming call · " + BASE_TITLE;
     const tone = () => {
       if (!C.ringing || C.inCall || Date.now() > C.ringStop) return stopRing();
       ringTone(); C.ringT = setTimeout(tone, 2000);
@@ -1769,32 +1769,32 @@ button { cursor: pointer; }
     const btn = $("callBtn"), bar = $("callBar");
     btn.hidden = !C.pid;
     btn.disabled = C.inCall || !C.online;
-    btn.title = !C.online ? "Menyambungkan layanan telepon…" : C.inCall ? "Sedang dalam telepon" : C.remote.size ? "Gabung telepon" : "Mulai telepon";
+    btn.title = !C.online ? "Connecting call service…" : C.inCall ? "You're in the call" : C.remote.size ? "Join call" : "Start call";
     const show = !!C.pid && (C.inCall || C.remote.size > 0);
     bar.hidden = !show;
     if (!show) return;
     bar.classList.toggle("ringing", C.ringing && !C.inCall);
     bar.classList.toggle("live", C.inCall);
     const people = [];
-    if (C.inCall) people.push({ id: "me", name: "Kamu", status: "", muted: C.muted });
+    if (C.inCall) people.push({ id: "me", name: "You", status: "", muted: C.muted });
     for (const [id, r] of C.remote) {
       const p = C.peers.get(id);
-      const status = !C.inCall ? "" : !p ? "menghubungkan…" : p.state === "tersambung" ? "" : p.state;
+      const status = !C.inCall ? "" : !p ? "connecting…" : p.state === "connected" ? "" : p.state;
       people.push({ id, name: r.name, status, muted: r.muted });
     }
     if (C.inCall) {
       const s = Math.floor((now - C.startedAt) / 1000);
-      $("callTitle").textContent = "Dalam telepon · " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0") +
-        (people.length > 1 ? " · " + people.length + " orang" : " · menunggu yang lain bergabung…");
+      $("callTitle").textContent = "In call · " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0") +
+        (people.length > 1 ? " · " + people.length + " people" : " · waiting for others to join…");
     } else {
-      $("callTitle").textContent = (C.ringing ? "📞 Panggilan masuk" : "Telepon sedang berlangsung") + " · " + people.length + " orang";
+      $("callTitle").textContent = (C.ringing ? "📞 Incoming call" : "Call in progress") + " · " + people.length + (people.length === 1 ? " person" : " people");
     }
     renderPeople(people);
     $("callJoin").hidden = C.inCall;
     $("callDecline").hidden = C.inCall || !C.ringing;
     $("callMute").hidden = !C.inCall;
     $("callHang").hidden = !C.inCall;
-    $("callMute").textContent = C.muted ? "Nyalakan mik" : "Bisukan";
+    $("callMute").textContent = C.muted ? "Unmute" : "Mute";
     $("callMute").classList.toggle("on", C.muted);
   }
 
@@ -1822,9 +1822,9 @@ button { cursor: pointer; }
       const av = document.createElement("span"); av.className = "av"; av.textContent = (pp.name.trim().charAt(0) || "?").toUpperCase();
       const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = pp.name;
       el.append(av, nm);
-      if (pp.muted) { const mic = document.createElement("span"); mic.className = "mic"; mic.textContent = "🔇"; mic.title = "Mikrofon dibisukan"; el.append(mic); }
-      if (pp.status) { const st = document.createElement("span"); st.className = "st" + (pp.status.startsWith("gagal") ? " bad" : ""); st.textContent = pp.status; el.append(st); }
-      el.setAttribute("aria-label", pp.name + (pp.muted ? ", dibisukan" : "") + (pp.status ? ", " + pp.status : ""));
+      if (pp.muted) { const mic = document.createElement("span"); mic.className = "mic"; mic.textContent = "🔇"; mic.title = "Microphone muted"; el.append(mic); }
+      if (pp.status) { const st = document.createElement("span"); st.className = "st" + (pp.status.startsWith("couldn") ? " bad" : ""); st.textContent = pp.status; el.append(st); }
+      el.setAttribute("aria-label", pp.name + (pp.muted ? ", muted" : "") + (pp.status ? ", " + pp.status : ""));
       box.append(el);
     }
   }
@@ -1861,18 +1861,18 @@ button { cursor: pointer; }
   });
   $("settingsBack").addEventListener("click", showTimeline);
 
-  // Anyone in the project. First click arms ("Yakin hapus semua?"), second click within 4 s deletes on the server.
+  // Anyone in the project. First click arms ("Delete everything?"), second click within 4 s deletes on the server.
   let clearT;
   function disarmClear() {
     clearTimeout(clearT); $("clearAllBtn").classList.remove("armed");
-    $("clearAllLabel").textContent = "Hapus semua"; $("clearAllBtn").setAttribute("aria-label", "Hapus semua update");
+    $("clearAllLabel").textContent = "Delete all"; $("clearAllBtn").setAttribute("aria-label", "Delete all updates");
   }
   $("clearAllBtn").addEventListener("click", async () => {
     const btn = $("clearAllBtn"), id = S.current, o = S.open.get(id);
     if (!o) return;
     if (!btn.classList.contains("armed")) {
-      btn.classList.add("armed"); $("clearAllLabel").textContent = "Yakin hapus semua?";
-      btn.setAttribute("aria-label", "Klik lagi untuk menghapus semua update secara permanen");
+      btn.classList.add("armed"); $("clearAllLabel").textContent = "Delete everything?";
+      btn.setAttribute("aria-label", "Click again to permanently delete all updates");
       clearT = setTimeout(disarmClear, 4000); return;
     }
     disarmClear(); btn.disabled = true;
@@ -1880,14 +1880,14 @@ button { cursor: pointer; }
       const r = await rpc("pu_clear_updates", { p_id: id, p_auth: o.auth });
       if (!r.ok) return handleAuthLoss(id, r.error);
       if (S.current === id) { S.updates.clear(); S.reactions.clear(); clearReply(); clearMedia(); S.editing = null; renderUpdates(true); }
-      toast(r.deleted ? "Semua update dihapus (" + r.deleted + ")." : "Tidak ada update untuk dihapus.");
-    } catch { toast("Gagal menghapus. Periksa koneksi."); }
+      toast(r.deleted ? "All updates deleted (" + r.deleted + ")." : "There were no updates to delete.");
+    } catch { toast("Couldn't delete. Check your connection."); }
     finally { btn.disabled = false; }
   });
   $("copyLink").addEventListener("click", async () => {
     const v = $("shareLink").value;
-    try { await navigator.clipboard.writeText(v); toast("Link disalin."); }
-    catch { $("shareLink").select(); toast("Tekan Ctrl+C untuk menyalin."); }
+    try { await navigator.clipboard.writeText(v); toast("Link copied."); }
+    catch { $("shareLink").select(); toast("Press Ctrl+C to copy."); }
   });
   $("saveRetention").addEventListener("click", async () => {
     const id = S.current, o = S.open.get(id); if (!o) return;
@@ -1895,25 +1895,25 @@ button { cursor: pointer; }
     try {
       const r = await rpc("pu_set_retention", { p_id: id, p_auth: o.auth, p_days: d });
       if (!r.ok) return handleAuthLoss(id, r.error);
-      o.retention = d; S.lastAt = null; toast("Disimpan. " + retentionLabel(d) + ".");
-    } catch { toast("Gagal menyimpan. Periksa koneksi."); }
+      o.retention = d; S.lastAt = null; toast("Saved. " + retentionLabel(d) + ".");
+    } catch { toast("Couldn't save. Check your connection."); }
   });
 
   $("changeForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = S.current, o = S.open.get(id); if (!o) return;
     const p1 = $("newPass1").value, p2 = $("newPass2").value;
-    if (passCheck(p1)[1] === "bad") return toast("Periksa lagi kata sandi barunya.");
-    if (p1 !== p2) return toast("Kata sandi baru dan ulangannya belum sama.");
+    if (passCheck(p1)[1] === "bad") return toast("Check the new password again.");
+    if (p1 !== p2) return toast("The new passwords don't match.");
     const btn = $("changeBtn"), st = $("changeStatus");
     btn.disabled = true; stopPoll();
     try {
       const salt = b64(crypto.getRandomValues(new Uint8Array(16)));
-      st.textContent = "Menyiapkan kunci baru…";
+      st.textContent = "Preparing new key…";
       const next = await derive(p1, salt, ITER);
       const nm = await seal(next.key, { name: o.name }, id + ":name");
       for (let attempt = 0; attempt < 3; attempt++) {
-        st.textContent = "Mengunci ulang semua update…";
+        st.textContent = "Re-encrypting all updates…";
         const all = await rpc("pu_list_updates", { p_id: id, p_auth: o.auth, p_after: null });
         if (!all.ok) { handleAuthLoss(id, all.error); return; }
         const rekeyed = [];
@@ -1936,25 +1936,25 @@ button { cursor: pointer; }
           o.key = next.key; o.auth = next.auth;
           S.updates.clear(); S.reactions.clear(); clearReply(); clearMedia(); S.lastAt = null;
           st.textContent = ""; $("changeForm").reset(); updChangeHints();
-          toast("Kata sandi diganti. Kirim kata sandi baru ke tim.");
+          toast("Password changed. Send the new password to your team.");
           showTimeline();
           return;
         }
         if (r.error !== "stale") { handleAuthLoss(id, r.error); return; }
       }
-      st.textContent = "Ada update baru masuk terus. Coba lagi sebentar lagi.";
+      st.textContent = "New updates keep arriving. Try again in a moment.";
     } catch {
-      st.textContent = "Gagal mengganti kata sandi. Tidak ada yang berubah.";
+      st.textContent = "Couldn't change the password. Nothing was changed.";
     } finally { btn.disabled = false; if (S.current === id && !$("vChat").hidden) startPoll(); }
   });
 
-  $("delRoomBtn").addEventListener("click", (e) => armButton(e.currentTarget, "Yakin hapus permanen?", async () => {
+  $("delRoomBtn").addEventListener("click", (e) => armButton(e.currentTarget, "Delete permanently?", async () => {
     const id = S.current, o = S.open.get(id); if (!o) return;
     try {
       const r = await rpc("pu_delete_project", { p_id: id, p_auth: o.auth });
       if (!r.ok) return handleAuthLoss(id, r.error);
-      forget(id); closeProject(); await loadProjects(); toast("Proyek dihapus.");
-    } catch { toast("Proyek gagal dihapus. Periksa koneksi."); }
+      forget(id); closeProject(); await loadProjects(); toast("Project deleted.");
+    } catch { toast("Couldn't delete the project. Check your connection."); }
   }));
 
   /* ---------- locking ---------- */
@@ -1965,7 +1965,7 @@ button { cursor: pointer; }
     stopPoll(); S.open.clear(); S.updates.clear(); S.reactions.clear(); clearReply(); clearMedia(); S.lastAt = null; S.editing = null;
     input.value = ""; autoGrow();
     renderProjects();
-    if (S.current) showLock("Proyek ditutup otomatis karena tidak ada aktivitas.");
+    if (S.current) showLock("Project locked automatically after inactivity.");
   }
   $("lockBtn").addEventListener("click", () => { const id = S.current; watchOnLock(id); forget(id); renderProjects(); showLock(); });
   for (const b of document.querySelectorAll("[data-back]")) b.addEventListener("click", () => $("app").classList.remove("show-main"));
@@ -1989,8 +1989,8 @@ button { cursor: pointer; }
   /* ---------- boot ---------- */
   async function boot() {
     if (!window.crypto || !crypto.subtle || !crypto.randomUUID) {
-      $("sideEmpty").textContent = "Browser ini tidak didukung. Coba Chrome, Firefox, Safari, atau Edge terbaru.";
-      $("newRoomBtn").disabled = true; setSync("Tidak didukung"); return;
+      $("sideEmpty").textContent = "This browser isn't supported. Try the latest Chrome, Firefox, Safari or Edge.";
+      $("newRoomBtn").disabled = true; setSync("Not supported"); return;
     }
     applyAdmin(); applySound();
     renderProjects();
