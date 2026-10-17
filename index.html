@@ -187,7 +187,21 @@ button { cursor: pointer; }
 @keyframes callpulse { from { opacity: 1; transform: scale(1); } to { opacity: .35; transform: scale(.7); } }
 .call-info { flex: 1; min-width: 160px; display: grid; }
 .call-info strong { font-size: 14px; font-variant-numeric: tabular-nums; }
-.call-info span { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.call-people { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.person {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 3px; border-radius: 999px;
+  background: var(--panel); border: 1px solid var(--line); font-size: 12px; max-width: 100%;
+}
+.person .av {
+  width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  background: var(--theirs); color: var(--accent); font-weight: 700; font-size: 12px;
+  box-shadow: 0 0 0 2px transparent; transition: box-shadow .15s;
+}
+.person.speaking .av { box-shadow: 0 0 0 2px var(--accent), 0 0 0 5px var(--accent-soft); }
+.person .nm { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 14ch; }
+.person .st { color: var(--muted); white-space: nowrap; }
+.person .st.bad { color: var(--danger); }
+.person .mic { font-size: 12px; }
 .call-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .call-actions .btn { padding: 6px 12px; font-size: 13px; }
 .btn-hang { background: var(--danger); color: var(--panel); border-color: var(--danger); }
@@ -486,7 +500,7 @@ button { cursor: pointer; }
       </div>
       <div class="call-bar" id="callBar" role="status" hidden>
         <span class="call-dot" aria-hidden="true"></span>
-        <div class="call-info"><strong id="callTitle"></strong><span id="callSub"></span></div>
+        <div class="call-info"><strong id="callTitle"></strong><div class="call-people" id="callPeople" aria-label="Peserta telepon"></div></div>
         <div class="call-actions">
           <button class="btn btn-primary" type="button" id="callJoin">Gabung</button>
           <button class="btn" type="button" id="callDecline">Tolak</button>
@@ -1554,7 +1568,7 @@ button { cursor: pointer; }
     inCall: false, stream: null, muted: false, startedAt: 0,
     peers: new Map(),    // sessionId -> { pc, name, audio, state }
     remote: new Map(),   // sessionId -> { name, last } for everyone currently in the call
-    hbT: null, tickT: null, ringing: false, ringT: null, ringStop: 0, declined: false,
+    hbT: null, tickT: null, talkT: null, selfMeter: null, ringing: false, ringT: null, ringStop: 0, declined: false,
   };
 
   // Minimal Phoenix-channel client for Realtime broadcast (join, heartbeat, send, reconnect).
@@ -1623,7 +1637,7 @@ button { cursor: pointer; }
       case "hb":
       case "join": {
         const quiet = C.remote.size === 0;
-        C.remote.set(m.from, { name, last: Date.now() });
+        C.remote.set(m.from, { name, last: Date.now(), muted: !!m.mu });
         if (!C.inCall && quiet && !C.declined) startRing();
         if (m.type === "join" && C.inCall) {
           if (C.me < m.from) connectPeer(m.from, name); else sig({ type: "here", to: m.from, name: S.myName });
@@ -1656,7 +1670,11 @@ button { cursor: pointer; }
     const audio = document.createElement("audio"); audio.autoplay = true; audio.setAttribute("playsinline", ""); audio.hidden = true;
     document.body.append(audio);
     const p = { pc, name, audio, state: "menghubungkan…" };
-    pc.ontrack = (e) => { audio.srcObject = e.streams[0]; audio.play().catch(() => {}); };
+    pc.ontrack = (e) => {
+      audio.srcObject = e.streams[0]; audio.play().catch(() => {});
+      if (p.meter) p.meter.stop();
+      p.meter = makeMeter(e.streams[0]);
+    };
     pc.onconnectionstatechange = () => {
       const s = pc.connectionState;
       if (s === "connected") p.state = "tersambung";
@@ -1696,6 +1714,7 @@ button { cursor: pointer; }
   function dropPeer(peerId) {
     const p = C.peers.get(peerId); if (!p) return;
     try { p.pc.close(); } catch {}
+    if (p.meter) p.meter.stop();
     p.audio.srcObject = null; p.audio.remove();
     C.peers.delete(peerId);
   }
@@ -1712,15 +1731,20 @@ button { cursor: pointer; }
     }
     if (!C.rt) { for (const t of C.stream.getTracks()) t.stop(); C.stream = null; return; }
     C.inCall = true; C.muted = false; C.startedAt = Date.now(); C.declined = false;
+    C.selfMeter = makeMeter(C.stream);
     sig({ type: "join", name: S.myName });
-    const beat = () => { sig({ type: "hb", name: S.myName }); bumpIdle(); };   // a call counts as activity
     beat(); C.hbT = setInterval(beat, 4000);
+    C.talkT = setInterval(markSpeakers, 200);
     renderCallBar();
   }
+  // Heartbeat: tells everyone in the project who is in the call and whether their mic is muted.
+  function beat() { sig({ type: "hb", name: S.myName, mu: C.muted }); bumpIdle(); }   // a call counts as activity
   function hangUp() {
     if (!C.inCall) return;
     sig({ type: "leave" });
     clearInterval(C.hbT); C.hbT = null;
+    clearInterval(C.talkT); C.talkT = null;
+    if (C.selfMeter) { C.selfMeter.stop(); C.selfMeter = null; }
     for (const id of [...C.peers.keys()]) dropPeer(id);
     if (C.stream) for (const t of C.stream.getTracks()) t.stop();
     C.stream = null; C.inCall = false; C.muted = false;
@@ -1751,22 +1775,66 @@ button { cursor: pointer; }
     if (!show) return;
     bar.classList.toggle("ringing", C.ringing && !C.inCall);
     bar.classList.toggle("live", C.inCall);
+    const people = [];
+    if (C.inCall) people.push({ id: "me", name: "Kamu", status: "", muted: C.muted });
+    for (const [id, r] of C.remote) {
+      const p = C.peers.get(id);
+      const status = !C.inCall ? "" : !p ? "menghubungkan…" : p.state === "tersambung" ? "" : p.state;
+      people.push({ id, name: r.name, status, muted: r.muted });
+    }
     if (C.inCall) {
       const s = Math.floor((now - C.startedAt) / 1000);
-      $("callTitle").textContent = "Dalam telepon · " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
-      const parts = [...C.peers.values()].map((p) => p.name + " (" + p.state + ")");
-      $("callSub").textContent = parts.length ? parts.join(", ") : "Menunggu yang lain bergabung…";
+      $("callTitle").textContent = "Dalam telepon · " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0") +
+        (people.length > 1 ? " · " + people.length + " orang" : " · menunggu yang lain bergabung…");
     } else {
-      const names = [...C.remote.values()].map((v) => v.name);
-      $("callTitle").textContent = C.ringing ? "📞 Panggilan masuk" : "Telepon sedang berlangsung";
-      $("callSub").textContent = names.join(", ") + " di telepon";
+      $("callTitle").textContent = (C.ringing ? "📞 Panggilan masuk" : "Telepon sedang berlangsung") + " · " + people.length + " orang";
     }
+    renderPeople(people);
     $("callJoin").hidden = C.inCall;
     $("callDecline").hidden = C.inCall || !C.ringing;
     $("callMute").hidden = !C.inCall;
     $("callHang").hidden = !C.inCall;
     $("callMute").textContent = C.muted ? "Nyalakan mik" : "Bisukan";
     $("callMute").classList.toggle("on", C.muted);
+  }
+
+  // Audio level meter (no recording, just loudness) used to highlight who is talking.
+  function makeMeter(stream) {
+    try {
+      ensureAudio(); if (!audioCtx) return null;
+      const src = audioCtx.createMediaStreamSource(stream), an = audioCtx.createAnalyser();
+      an.fftSize = 512; src.connect(an);
+      const buf = new Uint8Array(an.fftSize);
+      return {
+        level() { an.getByteTimeDomainData(buf); let s = 0; for (const v of buf) { const x = (v - 128) / 128; s += x * x; } return Math.sqrt(s / buf.length); },
+        stop() { try { src.disconnect(); } catch {} },
+      };
+    } catch { return null; }
+  }
+  let peopleSig = "";
+  function renderPeople(people) {
+    const sigNow = JSON.stringify(people);
+    if (sigNow === peopleSig) return;
+    peopleSig = sigNow;
+    const box = $("callPeople"); box.textContent = "";
+    for (const pp of people) {
+      const el = document.createElement("span"); el.className = "person"; el.dataset.id = pp.id;
+      const av = document.createElement("span"); av.className = "av"; av.textContent = (pp.name.trim().charAt(0) || "?").toUpperCase();
+      const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = pp.name;
+      el.append(av, nm);
+      if (pp.muted) { const mic = document.createElement("span"); mic.className = "mic"; mic.textContent = "🔇"; mic.title = "Mikrofon dibisukan"; el.append(mic); }
+      if (pp.status) { const st = document.createElement("span"); st.className = "st" + (pp.status.startsWith("gagal") ? " bad" : ""); st.textContent = pp.status; el.append(st); }
+      el.setAttribute("aria-label", pp.name + (pp.muted ? ", dibisukan" : "") + (pp.status ? ", " + pp.status : ""));
+      box.append(el);
+    }
+  }
+  function markSpeakers() {
+    for (const el of document.querySelectorAll("#callPeople .person")) {
+      const id = el.dataset.id;
+      const meter = id === "me" ? (C.muted ? null : C.selfMeter) : (C.peers.get(id) || {}).meter;
+      const muted = id === "me" ? C.muted : (C.remote.get(id) || {}).muted;
+      el.classList.toggle("speaking", !!meter && !muted && meter.level() > 0.04);
+    }
   }
 
   $("callBtn").addEventListener("click", joinCall);
@@ -1776,6 +1844,7 @@ button { cursor: pointer; }
     if (!C.stream) return;
     C.muted = !C.muted;
     for (const t of C.stream.getAudioTracks()) t.enabled = !C.muted;
+    beat();   // let the others see the mute right away
     renderCallBar();
   });
   $("callHang").addEventListener("click", hangUp);
