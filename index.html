@@ -348,6 +348,7 @@ button { cursor: pointer; }
 .toast {
   position: absolute; left: 50%; bottom: 80px; transform: translateX(-50%); background: var(--ink); color: var(--panel);
   padding: 8px 14px; border-radius: 10px; font-size: 0.8125rem; max-width: calc(100% - 32px); text-align: center; z-index: 5;
+  pointer-events: none;   /* a floating toast must never swallow clicks on the controls beneath it */
 }
 
 @media (max-width: 760px) {
@@ -374,6 +375,7 @@ button { cursor: pointer; }
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5L20 3"/><path d="M16 7l3 3"/><path d="M13 10l2.5 2.5"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
@@ -439,6 +441,10 @@ button { cursor: pointer; }
           <div class="form-row">
             <button class="btn" type="button" id="adminForget" hidden>Remove from this device</button>
             <button class="btn btn-primary" type="submit" id="adminSave">Save</button>
+          </div>
+          <div class="field">
+            <button class="btn btn-ghost" type="button" id="masterOpen" style="justify-self:start"><svg class="icon"><use href="#i-key"/></svg><span id="masterOpenLabel">Set up master key</span></button>
+            <span class="hint">Open any project with one master password, without its own password.</span>
           </div>
         </form>
       </div>
@@ -508,6 +514,46 @@ button { cursor: pointer; }
           </div>
           <button class="btn btn-primary btn-block" type="submit" id="unlockBtn">Open project</button>
           <div class="lock-msg" id="lockMsg"></div>
+        </form>
+        <form class="lock-card" id="masterUnlockForm" autocomplete="off" hidden style="margin-top:12px">
+          <div class="lock-badge"><svg class="icon"><use href="#i-key"/></svg></div>
+          <h2 class="lock-title">Open with master key</h2>
+          <span class="chip">Owner only</span>
+          <div class="field">
+            <label for="masterUnlockPass">Master password</label>
+            <input id="masterUnlockPass" type="password" maxlength="128" autocomplete="off" required>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit" id="masterUnlockBtn">Unlock</button>
+          <div class="lock-msg" id="masterUnlockMsg"></div>
+          <button class="btn btn-ghost" type="button" id="masterUnlockBack">Back to password</button>
+        </form>
+        <button class="btn btn-ghost" type="button" id="masterUnlockOpen" hidden style="margin-top:6px"><svg class="icon"><use href="#i-key"/></svg>Open with master key</button>
+      </div>
+    </section>
+
+    <!-- master key setup -->
+    <section class="view" id="vMaster" hidden>
+      <div class="center">
+        <form class="card" id="masterForm" autocomplete="off">
+          <button class="btn btn-ghost back" type="button" id="masterBack" style="justify-self:start"><svg class="icon"><use href="#i-back"/></svg>Back</button>
+          <p class="eyebrow">Owner</p>
+          <h2 class="h2">Master key</h2>
+          <p class="lede" id="masterLede">Set one master password. You'll be able to open any project created from now on, without its own password.</p>
+          <div class="field" id="masterPwFields">
+            <label for="masterPass1">Master password</label>
+            <input id="masterPass1" type="password" maxlength="128" autocomplete="new-password">
+            <span class="hint" id="masterPass1Hint">At least 10 characters, including letters. Keep it safe — it can't be recovered.</span>
+          </div>
+          <div class="field" id="masterPw2Field">
+            <label for="masterPass2">Repeat master password</label>
+            <input id="masterPass2" type="password" maxlength="128" autocomplete="new-password">
+            <span class="hint" id="masterPass2Hint"></span>
+          </div>
+          <div class="form-row">
+            <button class="btn" type="button" id="masterCancel">Cancel</button>
+            <button class="btn btn-primary" type="submit" id="masterSave"><svg class="icon"><use href="#i-key"/></svg><span>Set master key</span></button>
+          </div>
+          <span class="hint" id="masterStatus"></span>
         </form>
       </div>
     </section>
@@ -671,8 +717,51 @@ button { cursor: pointer; }
       { name: "PBKDF2", salt: unb64(saltB64), iterations: iter, hash: "SHA-256" }, base, 512));
     const key = await crypto.subtle.importKey("raw", bits.slice(0, 32), { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
     const auth = hex(bits.slice(32));
-    bits.fill(0);
-    return { key, auth };
+    return { key, auth, raw: bits };   // raw = the 64 key bytes, used to wrap for the owner master key
+  }
+
+  /* ---------- owner master key (RSA-OAEP) ----------
+     The owner sets a master password once. A keypair is generated in the browser: the public key is
+     public, the private key is stored AES-encrypted with the master password. Each project wraps its
+     own 64 key bytes with the master PUBLIC key (owner_key). Only the master private key can unwrap
+     them, so the owner can open any project without its password. The server holds only public keys
+     and ciphertext. */
+  async function mkDeriveWrap(masterPw, saltB64) {
+    const base = await crypto.subtle.importKey("raw", enc.encode(masterPw.normalize("NFC")), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: unb64(saltB64), iterations: ITER, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+  }
+  async function mkGenerate(masterPw) {
+    const kp = await crypto.subtle.generateKey(
+      { name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" }, true, ["encrypt", "decrypt"]);
+    const pub = b64(await crypto.subtle.exportKey("spki", kp.publicKey));
+    const pkcs8 = new Uint8Array(await crypto.subtle.exportKey("pkcs8", kp.privateKey));
+    const salt = b64(crypto.getRandomValues(new Uint8Array(16)));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const priv = b64(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await mkDeriveWrap(masterPw, salt), pkcs8));
+    return { pub, priv, salt, iv: b64(iv) };
+  }
+  async function mkImportPub(pubB64) {
+    return crypto.subtle.importKey("spki", unb64(pubB64), { name: "RSA-OAEP", hash: "SHA-256" }, false, ["encrypt"]);
+  }
+  async function mkOpenPriv(masterPw, m) {   // m = {priv, salt, iv} ; throws on wrong master password
+    const pkcs8 = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(m.iv) }, await mkDeriveWrap(masterPw, m.salt), unb64(m.priv));
+    return crypto.subtle.importKey("pkcs8", pkcs8, { name: "RSA-OAEP", hash: "SHA-256" }, false, ["decrypt"]);
+  }
+  const mkWrap = async (pubKey, raw) => b64(await crypto.subtle.encrypt({ name: "RSA-OAEP" }, pubKey, raw));
+  const mkUnwrap = async (privKey, b) => new Uint8Array(await crypto.subtle.decrypt({ name: "RSA-OAEP" }, privKey, unb64(b)));
+
+  let masterPub = null;   // imported RSA public key, when a master key has been set up
+  async function loadMaster() {
+    try {
+      const m = await rpc("pu_get_master");
+      masterPub = m && m.set ? await mkImportPub(m.pub) : null;
+    } catch { /* leave masterPub as-is */ }
+  }
+  // After a project's password is known (create / change), store its wrapped key for the master.
+  async function wrapOwnerKey(id, auth, raw) {
+    if (!masterPub) return;
+    try { await rpc("pu_set_owner_key", { p_id: id, p_auth: auth, p_owner_key: await mkWrap(masterPub, raw) }); } catch {}
   }
   async function seal(key, obj, aad) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -803,7 +892,7 @@ button { cursor: pointer; }
     clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 3400);
   }
   function show(view) {
-    for (const v of ["vWelcome", "vAdmin", "vCreate", "vLock", "vChat", "vSettings"]) $(v).hidden = v !== view;
+    for (const v of ["vWelcome", "vAdmin", "vMaster", "vCreate", "vLock", "vChat", "vSettings"]) $(v).hidden = v !== view;
     $("app").classList.toggle("show-main", view !== "vWelcome");
   }
   const fmtTime = (s) => new Date(s).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
@@ -844,6 +933,7 @@ button { cursor: pointer; }
   }
   const updCreateHints = wirePassHints("pass1", "pass2", "pass1Hint", "pass2Hint");
   const updChangeHints = wirePassHints("newPass1", "newPass2", "newPass1Hint", "newPass2Hint");
+  const updMasterHints = wirePassHints("masterPass1", "masterPass2", "masterPass1Hint", "masterPass2Hint");
 
   /* ---------- project list ---------- */
   async function loadProjects() {
@@ -912,7 +1002,7 @@ button { cursor: pointer; }
     try {
       const id = crypto.randomUUID();
       const salt = b64(crypto.getRandomValues(new Uint8Array(16)));
-      const { key, auth } = await derive(p1, salt, ITER);
+      const { key, auth, raw } = await derive(p1, salt, ITER);
       const nm = await seal(key, { name }, id + ":name");
       const retention = parseInt($("retention").value, 10);
       const r = await rpc("pu_create_project", {
@@ -925,6 +1015,7 @@ button { cursor: pointer; }
       }
       if (!r.ok) throw new Error(r.error);
       S.open.set(id, { key, auth, name, retention });
+      await wrapOwnerKey(id, auth, raw);
       $("createForm").reset();
       await loadProjects();
       selectProject(id);
@@ -942,6 +1033,7 @@ button { cursor: pointer; }
       ? "This device can already create projects. Enter a different code to replace it."
       : "Enter the creator code to enable the New project button on this device.";
     $("adminHint").textContent = "The code is stored only in this browser."; $("adminHint").className = "hint";
+    $("masterOpenLabel").textContent = masterPub ? "Master key (set)" : "Set up master key";
     show("vAdmin");
   }
   function leaveAdmin() { try { history.replaceState(null, "", location.pathname + location.search); } catch {} show("vWelcome"); }
@@ -961,6 +1053,7 @@ button { cursor: pointer; }
   window.addEventListener("hashchange", () => {
     const want = location.hash.slice(1);
     if (want === "kelola") showAdmin();
+    else if (want === "master") showMaster();
     else if (want && want !== S.current && S.projects.some((p) => p.id === want)) selectProject(want);
   });
 
@@ -991,6 +1084,53 @@ button { cursor: pointer; }
   applyText();
   $("adminForget").addEventListener("click",() => { forgetAdmin(); leaveAdmin(); toast("Creator code removed from this device."); });
 
+  /* ---------- master key setup (owner) ---------- */
+  let masterIsSet = false;
+  async function showMaster() {
+    try { const m = await rpc("pu_get_master"); masterIsSet = !!(m && m.set); } catch { masterIsSet = false; }
+    $("masterForm").reset(); updMasterHints(); $("masterStatus").textContent = "";
+    if (!ADMIN) {
+      $("masterLede").textContent = "Enter the creator code first (Admin screen), then set the master key.";
+      $("masterPwFields").hidden = true; $("masterPw2Field").hidden = true; $("masterSave").hidden = true;
+    } else if (masterIsSet) {
+      $("masterLede").textContent = "A master key is already set. You can open any project (created since it was set) with it on the lock screen. Replacing it makes every existing project's master access stop working.";
+      $("masterPwFields").hidden = false; $("masterPw2Field").hidden = false; $("masterSave").hidden = false;
+      $("masterSave").lastElementChild.textContent = "Replace master key";
+    } else {
+      $("masterLede").textContent = "Set one master password. You'll be able to open any project created from now on, without its own password. Keep it safe — it can't be recovered, and existing projects (like ones created before this) won't be covered.";
+      $("masterPwFields").hidden = false; $("masterPw2Field").hidden = false; $("masterSave").hidden = false;
+      $("masterSave").lastElementChild.textContent = "Set master key";
+    }
+    show("vMaster");
+  }
+  function leaveMaster() { try { history.replaceState(null, "", location.pathname + location.search); } catch {} showAdmin(); }
+  $("masterOpen").addEventListener("click", showMaster);
+  $("masterBack").addEventListener("click", leaveMaster);
+  $("masterCancel").addEventListener("click", leaveMaster);
+  $("masterForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!ADMIN) return;
+    const p1 = $("masterPass1").value, p2 = $("masterPass2").value;
+    if (passCheck(p1)[1] === "bad") return toast("Check the master password again.");
+    if (p1 !== p2) return toast("The master passwords don't match.");
+    const btn = $("masterSave"), st = $("masterStatus");
+    btn.disabled = true; st.className = "hint"; st.textContent = "Generating key…";
+    try {
+      const g = await mkGenerate(p1);
+      const r = await rpc("pu_set_master", { p_admin: ADMIN, p_pub: g.pub, p_priv: g.priv, p_salt: g.salt, p_iv: g.iv, p_reset: masterIsSet });
+      if (!r.ok) {
+        if (r.error === "forbidden") { st.textContent = "Creator code is no longer valid."; }
+        else if (r.error === "exists") { st.textContent = "A master key is already set."; }
+        else st.textContent = "Couldn't save. Try again.";
+        st.className = "hint bad"; return;
+      }
+      masterPub = await mkImportPub(g.pub); masterIsSet = true;
+      toast(r ? "Master key set. New projects can be opened with it." : "");
+      leaveMaster();
+    } catch { st.textContent = "Couldn't connect. Try again."; st.className = "hint bad"; }
+    finally { btn.disabled = false; }
+  });
+
   /* ---------- unlock ---------- */
   function showLock(msg, bad) {
     const p = S.projects.find((x) => x.id === S.current);
@@ -998,9 +1138,54 @@ button { cursor: pointer; }
     $("lockSub").textContent = p ? "Locked · Created " + fmtDate(p.created_at) : "Locked";
     $("unlockForm").reset(); $("unlockName").value = S.myName;
     setLockMsg(msg || "", bad);
+    // Master unlock is offered only when a master key exists.
+    $("unlockForm").hidden = false; $("masterUnlockForm").hidden = true;
+    $("masterUnlockOpen").hidden = !masterPub;
     show("vLock");
     if (finePointer) setTimeout(() => $("unlockPass").focus(), 30);
   }
+  function showMasterUnlock(on) {
+    $("masterUnlockForm").hidden = !on; $("unlockForm").hidden = on; $("masterUnlockOpen").hidden = on;
+    if (on) { $("masterUnlockForm").reset(); $("masterUnlockMsg").textContent = ""; if (finePointer) setTimeout(() => $("masterUnlockPass").focus(), 30); }
+  }
+  $("masterUnlockOpen").addEventListener("click", () => showMasterUnlock(true));
+  $("masterUnlockBack").addEventListener("click", () => showMasterUnlock(false));
+  $("masterUnlockForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = S.current, pw = $("masterUnlockPass").value; if (!id || !pw) return;
+    const btn = $("masterUnlockBtn"), msg = $("masterUnlockMsg");
+    btn.disabled = true; msg.className = "lock-msg"; msg.textContent = "Checking master password…";
+    try {
+      const m = await rpc("pu_get_master");
+      if (!m || !m.set) { msg.textContent = "No master key is set."; msg.className = "lock-msg bad"; return; }
+      let priv;
+      try { priv = await mkOpenPriv(pw, m); } catch { msg.textContent = "Wrong master password."; msg.className = "lock-msg bad"; return; }
+      const ok = await rpc("pu_get_owner_key", { p_id: id });
+      if (!ok || !ok.owner_key) { msg.textContent = "This project has no master key — it was created before the master key was set."; msg.className = "lock-msg bad"; return; }
+      let raw;
+      try { raw = await mkUnwrap(priv, ok.owner_key); } catch { msg.textContent = "This project's master key doesn't match. It may predate the current master key."; msg.className = "lock-msg bad"; return; }
+      const key = await crypto.subtle.importKey("raw", raw.slice(0, 32), { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
+      const auth = hex(raw.slice(32, 64));
+      let r = await rpc("pu_open", { p_id: id, p_auth: auth });
+      if (S.current !== id) return;
+      if (!r.ok && r.error === "locked" && ADMIN) {
+        await rpc("pu_master_clear_lock", { p_admin: ADMIN, p_id: id }).catch(() => {});
+        r = await rpc("pu_open", { p_id: id, p_auth: auth });
+      }
+      if (!r.ok) {
+        msg.textContent = r.error === "locked"
+          ? "Right key, but the project is in a lockout cooldown. Try again shortly."
+          : errText(r.error, r.locked_until);
+        msg.className = "lock-msg bad"; return;
+      }
+      const { name } = await unseal(key, r.name_iv, r.name_ct, id + ":name");
+      S.open.set(id, { key, auth, name, retention: r.retention_days });
+      WATCH.delete(id); S.watchNew.delete(id);
+      const pr = S.projects.find((x) => x.id === id); if (pr && !pr.name) pr.name = name;
+      renderProjects(); showTimeline();
+    } catch { msg.textContent = "Couldn't connect. Try again."; msg.className = "lock-msg bad"; }
+    finally { btn.disabled = false; }
+  });
   function setLockMsg(t, bad) { const m = $("lockMsg"); m.textContent = t; m.className = "lock-msg" + (bad ? " bad" : ""); }
   function errText(code, lockedUntil) {
     switch (code) {
@@ -2001,6 +2186,7 @@ button { cursor: pointer; }
         });
         if (r.ok) {
           o.key = next.key; o.auth = next.auth;
+          await wrapOwnerKey(id, next.auth, next.raw);
           S.updates.clear(); S.reactions.clear(); clearReply(); clearMedia(); S.lastAt = null;
           st.textContent = ""; $("changeForm").reset(); updChangeHints();
           toast("Password changed. Send the new password to your team.");
@@ -2061,9 +2247,10 @@ button { cursor: pointer; }
     }
     applyAdmin(); applySound();
     renderProjects();
-    await loadProjects();
+    await Promise.all([loadProjects(), loadMaster()]);
     const want = location.hash.slice(1);
     if (want === "kelola") showAdmin();
+    else if (want === "master") showMaster();
     else if (want && S.projects.some((p) => p.id === want)) selectProject(want);
     setInterval(() => { if (!document.hidden) loadProjects(); }, 30000);
   }
